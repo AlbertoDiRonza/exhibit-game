@@ -1,0 +1,48 @@
+[gd_scene load_steps=7 format=3 uid="uid://ddsi2027judo6"]
+
+[ext_resource type="PackedScene" uid="uid://2yvw3svgyr4d" path="res://Scene/player.tscn" id="1_j4qrl"]
+[ext_resource type="Texture2D" uid="uid://l74penlo1l83" path="res://Assets/Immagini/pavimento.png" id="2_31fxm"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_j4qrl"]
+transparency = 1
+albedo_color = Color(1, 1, 1, 0.2509804)
+albedo_texture = ExtResource("2_31fxm")
+uv1_scale = Vector3(20, 20, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_j4qrl"]
+material = SubResource("StandardMaterial3D_j4qrl")
+
+[sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_31fxm"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_06yma"]
+
+[node name="Galleria" type="Node3D"]
+
+[node name="Player" parent="." instance=ExtResource("1_j4qrl")]
+
+[node name="Pavimento" type="MeshInstance3D" parent="."]
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 0, 0, 0)
+mesh = SubResource("PlaneMesh_j4qrl")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Pavimento"]
+
+[node name="Fondo" type="CollisionShape3D" parent="Pavimento/StaticBody3D"]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0.0010078431)
+shape = SubResource("WorldBoundaryShape3D_31fxm")
+debug_color = Color(0.078538485, 0.58480704, 0.7625632, 0.972549)
+
+[node name="Est" type="CollisionShape3D" parent="Pavimento/StaticBody3D"]
+transform = Transform3D(0.2, 0, 0, 0, 1, 0, 0, 0, 2, 1.1, 0.5, 0)
+shape = SubResource("BoxShape3D_06yma")
+
+[node name="Ovest" type="CollisionShape3D" parent="Pavimento/StaticBody3D"]
+transform = Transform3D(0.2, 0, 0, 0, 1, 0, 0, 0, 2, -1.1, 0.5, 0)
+shape = SubResource("BoxShape3D_06yma")
+
+[node name="Nord" type="CollisionShape3D" parent="Pavimento/StaticBody3D"]
+transform = Transform3D(-8.742278e-09, 0, 2, 0, 1, 0, -0.2, 0, -8.742278e-08, 0, 0.5, 1.1)
+shape = SubResource("BoxShape3D_06yma")
+
+[node name="Sud" type="CollisionShape3D" parent="Pavimento/StaticBody3D"]
+transform = Transform3D(-8.742278e-09, 0, 2, 0, 1, 0, -0.2, 0, -8.742278e-08, 0, 0.5, -1.1)
+shape = SubResource("BoxShape3D_06yma")
