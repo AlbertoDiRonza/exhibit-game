@@ -1,4 +1,4 @@
-extends Node3D
+extends CharacterBody3D
 
 @export var mouse_sensitivity: float = 0.002
 @export var move_speed: float = 4.0
@@ -6,7 +6,6 @@ extends Node3D
 var is_xr_active: bool = false
 
 @onready var camera_3d: Camera3D = $Camera3D
-@onready var body: CharacterBody3D = $"."
 @onready var crosshair: Control = $HUD/mirino
 
 func _ready():
@@ -52,9 +51,20 @@ func _physics_process(delta):
 	input_dir = input_dir.normalized()
 	var direction = (transform.basis * Vector3(input_dir.x, 0, input_dir.y))
 
-	body.velocity.x = direction.x * move_speed
-	body.velocity.z = direction.z * move_speed
-	body.move_and_slide()
-
-	# Sincronizza posizione del Node3D con il body dopo le collisioni
-	global_position = body.global_position
+	velocity.x = direction.x * move_speed
+	velocity.z = direction.z * move_speed
+	move_and_slide()
+	
+	var ray_pick_origin = camera_3d.global_position 
+	var ray_pick_end =  ray_pick_origin + (-camera_3d.transform.basis.z * 2.0)
+	var space_state = get_world_3d().direct_space_state
+	var query = PhysicsRayQueryParameters3D.create(ray_pick_origin, ray_pick_end)
+	var result = space_state.intersect_ray(query)
+	if result:
+		# ha colpito qualcosa
+		if result.collider.has_method("pick_up"):
+			#se ha questo metodo è interagibile
+			return
+	else:
+		# non ha colpito niente
+		return
