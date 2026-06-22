@@ -1,4 +1,6 @@
-[gd_scene load_steps=5 format=3 uid="uid://bdt3wcu1yu11e"]
+[gd_scene load_steps=6 format=3 uid="uid://bdt3wcu1yu11e"]
+
+[ext_resource type="Script" uid="uid://4psbnwb5ni5m" path="res://Scripts/Azione/oggetto.gd" id="1_d5g6h"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_umo0t"]
 
@@ -12,6 +14,7 @@ albedo_color = Color(0.34220693, 0.34220695, 0.3422069, 1)
 [node name="Oggetto" type="Node3D"]
 
 [node name="RigidBody3D" type="RigidBody3D" parent="."]
+script = ExtResource("1_d5g6h")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D"]
 shape = SubResource("BoxShape3D_umo0t")
@@ -21,8 +24,8 @@ debug_color = Color(0.1882353, 0.22745098, 0.23529412, 0.99607843)
 mesh = SubResource("BoxMesh_d5g6h")
 surface_material_override/0 = SubResource("StandardMaterial3D_umo0t")
 
-[node name="Area3D" type="Area3D" parent="."]
+[node name="Area occupata" type="Area3D" parent="RigidBody3D"]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D/Area occupata"]
 transform = Transform3D(1.1, 0, 0, 0, 1.1, 0, 0, 0, 1.1, 0, 0, 0)
 shape = SubResource("BoxShape3D_d5g6h")
