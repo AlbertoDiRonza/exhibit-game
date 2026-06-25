@@ -6,6 +6,19 @@ signal fatica_changed
 var oggetti = []
 var quota_fatica_oggetto: float
 
+var speakers = []
+var brkn_speaker = null
+#timer interno
+
+var brk_time_min: float = 10.0
+var brk_time_max: float = 30.0
+var brk_timer: float = randf_range(brk_time_min, brk_time_max)
+
+var timer_rottura_spk: float = 0.0 
+var quota_fatica_spk : float = 1.0 
+var fatica_tot_rimossa_spk: float = 0.0
+
+@warning_ignore("unused_signal")
 signal game_over
 
 # Called when the node enters the scene tree for the first time.
@@ -14,7 +27,20 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	pass
+	brk_timer -= delta
+	if brk_timer <= 0:
+		if !brkn_speaker:
+			brkn_speaker = speakers.pick_random()
+			brk_timer = randf_range(brk_time_min, brk_time_max)
+			
+	if brkn_speaker != null: 
+		timer_rottura_spk += delta
+		if timer_rottura_spk >= 2.0: #aggiorno la fatica ogni due secondi
+			fatica_tot += quota_fatica_spk
+			fatica_tot_rimossa_spk += quota_fatica_spk
+			fatica_tot = clamp(fatica_tot, 0, 100)
+			fatica_changed.emit(fatica_tot)
+			timer_rottura_spk = 0.0
  
 func registra_oggetti(o) -> void: 
 	oggetti.append(o)
@@ -49,3 +75,8 @@ func rimuovi_coppia(a,b) -> void:
 		coppie_vicine.erase(chiave)
 	else: 
 		return
+		
+func registra_speakers(s) -> void: 
+	speakers.append(s)
+
+	

@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://ddsi2027judo6"]
+[gd_scene load_steps=13 format=3 uid="uid://ddsi2027judo6"]
 
 [ext_resource type="Script" uid="uid://dojhxotaxjubo" path="res://Scripts/Logica_backend/galleria.gd" id="1_4kvl3"]
 [ext_resource type="PackedScene" uid="uid://bdt3wcu1yu11e" path="res://Scene/oggetto.tscn" id="1_06yma"]
@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://l74penlo1l83" path="res://Assets/Immagini/pavimento.png" id="2_31fxm"]
 [ext_resource type="PackedScene" uid="uid://d18n11nvafd7h" path="res://Assets/3D_models/statue_ancient_woman/Venus of Milo.glb" id="3_lttqn"]
 [ext_resource type="PackedScene" uid="uid://ct2hjn1li1ptg" path="res://Assets/3D_models/table1/Antigue Table.glb" id="4_lee88"]
+[ext_resource type="PackedScene" uid="uid://beqlgo34io4dj" path="res://Scene/altoparlante.tscn" id="7_1d8q1"]
 
 [sub_resource type="Environment" id="Environment_06yma"]
 
@@ -75,5 +76,19 @@ light_energy = 1.5
 [node name="Timer" type="Timer" parent="."]
 wait_time = 120.0
 one_shot = true
+
+[node name="Speakers" type="Node" parent="."]
+
+[node name="Altoparlante 1" parent="Speakers" instance=ExtResource("7_1d8q1")]
+transform = Transform3D(-4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, 0, 1, -9, 4, 0)
+
+[node name="Altoparlante 2" parent="Speakers" instance=ExtResource("7_1d8q1")]
+transform = Transform3D(1, 0, 0, 0, -0.34202012, 0.9396926, 0, -0.9396926, -0.34202012, 0, 4, 9)
+
+[node name="Altoparlante 3" parent="Speakers" instance=ExtResource("7_1d8q1")]
+transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 9, 4, 0)
+
+[node name="Altoparlante 4" parent="Speakers" instance=ExtResource("7_1d8q1")]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 4, -9)
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

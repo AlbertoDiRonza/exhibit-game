@@ -1,7 +1,7 @@
 extends CharacterBody3D
 
-@export var mouse_sensitivity: float = 0.002
-@export var move_speed: float = 4.0
+@export var mouse_sensitivity: float = 0.004
+@export var move_speed: float = 5.0
 
 var is_xr_active: bool = false
 
@@ -9,12 +9,17 @@ var is_xr_active: bool = false
 @onready var crosshair: Control = $HUD/mirino
 @onready var label_interazione: Label = $HUD/interact
 @onready var fatigue_bar: ProgressBar = $"HUD/barra fatica"
+@onready var label_interazione_spk: Label = $HUD/interact_spk
+@onready var barra_riparazione: ProgressBar = $HUD/barra_riparazione
 
 var held_objct: RigidBody3D = null
 var focused_objct: RigidBody3D = null
+var focused_speaker : StaticBody3D = null
 
 var place_position: Vector3
 var is_floor: bool 
+
+var repair_timer: float = 0.0
 
 func _ready():
 	var interface = XRServer.find_interface("OpenXR")
@@ -64,8 +69,10 @@ func _input(event):
 						held_objct.place(Vector3(place_position.x, place_position.y + held_objct.half_height, place_position.z))
 						place_position = Vector3.ZERO
 						held_objct = null
+			
 		
 
+@warning_ignore("unused_parameter")
 func _physics_process(delta):
 	if is_xr_active:
 		return
@@ -75,6 +82,18 @@ func _physics_process(delta):
 	if Input.is_action_pressed("move_back"):    input_dir.y += 1
 	if Input.is_action_pressed("move_left"):    input_dir.x -= 1
 	if Input.is_action_pressed("move_right"):   input_dir.x += 1
+	if Input.is_key_pressed(KEY_E):
+		if focused_speaker != null:
+			repair_timer += delta
+			barra_riparazione.value = repair_timer / 3.0
+			if repair_timer >= 3.0: 
+				focused_speaker.repair()
+				repair_timer = 0.0
+				barra_riparazione.value = 0.0
+	else: 
+			repair_timer = 0.0
+			barra_riparazione.value = 0.0
+
 
 	input_dir = input_dir.normalized()
 	var direction = (transform.basis * Vector3(input_dir.x, 0, input_dir.y))
@@ -94,14 +113,21 @@ func _physics_process(delta):
 		if result_pick and result_pick.collider.has_method("pick_up"):
 			# ha colpito qualcosa, se ha questo metodo è interagibile
 			focused_objct = result_pick.collider
+		elif result_pick and result_pick.collider.has_method("repair"):
+			if result_pick.collider.spk_state == result_pick.collider.State.BROKEN:
+				focused_speaker = result_pick.collider
+			else:
+				focused_speaker = null
 		else:
 			#oggetto colpito non ha il metodo
 			focused_objct = null
+			focused_speaker = null
 	else:
 		focused_objct = null
 	label_interazione.visible = (focused_objct != null)
-
-			
+	label_interazione_spk.visible = (focused_speaker != null)
+	barra_riparazione.visible = (focused_speaker != null)
+	
 	if held_objct:
 		var ray_place_origin = camera_3d.global_position
 		var ray_place_end = ray_place_origin + (-camera_3d.global_transform.basis.z * 5.0)

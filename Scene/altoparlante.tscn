@@ -1,0 +1,17 @@
+[gd_scene load_steps=5 format=3 uid="uid://beqlgo34io4dj"]
+
+[ext_resource type="Script" uid="uid://cx1bcq25a14tr" path="res://Scripts/Logica_backend/altoparlante.gd" id="1_cx0mo"]
+[ext_resource type="PackedScene" uid="uid://c0hsbgfblphf6" path="res://Assets/3D_models/speaker/Untitled.glb" id="2_56csw"]
+[ext_resource type="AudioStream" uid="uid://72qv5egcpjty" path="res://Assets/Sound/noise.wav" id="3_mh1xy"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_s2t6l"]
+
+[node name="StaticBody3D" type="StaticBody3D"]
+script = ExtResource("1_cx0mo")
+model = ExtResource("2_56csw")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_s2t6l")
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("3_mh1xy")
