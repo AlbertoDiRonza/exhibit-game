@@ -1,5 +1,7 @@
 extends RigidBody3D
 
+@export var is_artwork: bool = true
+
 var mesh_instance: MeshInstance3D = null
 
 @export var model: PackedScene
