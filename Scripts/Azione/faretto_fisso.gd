@@ -7,15 +7,27 @@ func _ready() -> void:
 	cono_luce.body_exited.connect(_on_cono_luce_body_exited)
 
 func _on_cono_luce_body_entered(body: Node3D) -> void:
-	if body.has_method("pick_up") and "obj_state" in body:
-		# IL NUOVO FILTRO: L'oggetto ha la variabile 'is_artwork' ed è impostata su vero?
-		if "is_artwork" in body and body.is_artwork == true:
-			# È un'opera d'arte! Controlliamo se è posata a terra
-			if body.obj_state == body.State.PLACED:
-				GameManager.aggiungi_luce_oggetto(body.get_instance_id())
+	# 1. LETTURA SICURA: Chiediamo le variabili senza far arrabbiare Godot
+	var stato = body.get("obj_state")
+	var opera = body.get("is_artwork")
+	
+	# 2. FILTRO DI SICUREZZA: Se è il pavimento o il faretto stesso, ignoralo.
+	if stato == null:
+		return
+		
+	# 3. FILTRO LOGICA: A questo punto sappiamo che è un Oggetto (Statua o Tavolino).
+	# Se è il tavolino, 'opera' sarà false. L'if qui sotto fallisce e non ricevi il bonus luce!
+	# Solo la Scultura supererà questo controllo.
+	if opera == true:
+		if stato == body.State.PLACED:
+			GameManager.aggiungi_luce_oggetto(body.get_instance_id())
 
 func _on_cono_luce_body_exited(body: Node3D) -> void:
-	if body.has_method("pick_up") and "obj_state" in body:
-		# Se esce, controlliamo sempre che fosse un'opera d'arte prima di rimuoverla
-		if "is_artwork" in body and body.is_artwork == true:
-			GameManager.rimuovi_luce_oggetto(body.get_instance_id())
+	var stato = body.get("obj_state")
+	var opera = body.get("is_artwork")
+	
+	if stato == null:
+		return
+		
+	if opera == true:
+		GameManager.rimuovi_luce_oggetto(body.get_instance_id())
