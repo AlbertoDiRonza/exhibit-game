@@ -1,94 +1,88 @@
-[gd_scene load_steps=13 format=3 uid="uid://ddsi2027judo6"]
+[gd_scene format=3 uid="uid://ddsi2027judo6"]
 
 [ext_resource type="Script" uid="uid://dojhxotaxjubo" path="res://Scripts/Logica_backend/galleria.gd" id="1_4kvl3"]
 [ext_resource type="PackedScene" uid="uid://bdt3wcu1yu11e" path="res://Scene/oggetto.tscn" id="1_06yma"]
 [ext_resource type="PackedScene" uid="uid://2yvw3svgyr4d" path="res://Scene/player.tscn" id="1_j4qrl"]
-[ext_resource type="Texture2D" uid="uid://l74penlo1l83" path="res://Assets/Immagini/pavimento.png" id="2_31fxm"]
-[ext_resource type="PackedScene" uid="uid://d18n11nvafd7h" path="res://Assets/3D_models/statue_ancient_woman/Venus of Milo.glb" id="3_lttqn"]
-[ext_resource type="PackedScene" uid="uid://ct2hjn1li1ptg" path="res://Assets/3D_models/table1/Antigue Table.glb" id="4_lee88"]
+[ext_resource type="PackedScene" uid="uid://c88d6lnlibyn7" path="res://Assets/3D_models/statue_ancient_woman/Venus of Milo.glb" id="3_lttqn"]
+[ext_resource type="PackedScene" uid="uid://d31h227ickewo" path="res://Assets/3D_models/table1/Antigue Table.glb" id="4_lee88"]
 [ext_resource type="PackedScene" uid="uid://beqlgo34io4dj" path="res://Scene/altoparlante.tscn" id="7_1d8q1"]
+[ext_resource type="PackedScene" uid="uid://mi1cbbkphe8h" path="res://Scene/faretto_fisso.tscn" id="8_k2rys"]
 
 [sub_resource type="Environment" id="Environment_06yma"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_j4qrl"]
-transparency = 1
-albedo_color = Color(1, 1, 1, 0.2509804)
-albedo_texture = ExtResource("2_31fxm")
-uv1_scale = Vector3(20, 20, 1)
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_oqhxj"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_j4qrl"]
-material = SubResource("StandardMaterial3D_j4qrl")
+material = SubResource("StandardMaterial3D_oqhxj")
 
 [sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_31fxm"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_06yma"]
 
-[node name="Galleria" type="Node3D"]
+[node name="Galleria" type="Node3D" unique_id=2029327489]
 script = ExtResource("1_4kvl3")
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1619603503]
 environment = SubResource("Environment_06yma")
 
-[node name="Oggetti" type="Node" parent="."]
+[node name="Oggetti" type="Node" parent="." unique_id=76490750]
 
-[node name="Venere di Milo" parent="Oggetti" instance=ExtResource("1_06yma")]
+[node name="Venere di Milo" parent="Oggetti" unique_id=838783220 instance=ExtResource("1_06yma")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1611023, 0.5045477, 0)
 model = ExtResource("3_lttqn")
 
-[node name="Table1" parent="Oggetti" instance=ExtResource("1_06yma")]
+[node name="Table1" parent="Oggetti" unique_id=1268236510 instance=ExtResource("1_06yma")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5561242, 0.9697902, 0)
 model = ExtResource("4_lee88")
 
-[node name="Player" parent="." instance=ExtResource("1_j4qrl")]
+[node name="Player" parent="." unique_id=464050550 instance=ExtResource("1_j4qrl")]
 
-[node name="Pavimento" type="MeshInstance3D" parent="."]
+[node name="Pavimento" type="MeshInstance3D" parent="." unique_id=810726319]
 transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 0, -0.01796627, 0)
 mesh = SubResource("PlaneMesh_j4qrl")
 
-[node name="StaticBody3D" type="StaticBody3D" parent="Pavimento"]
+[node name="StaticBody3D" type="StaticBody3D" parent="Pavimento" unique_id=560586342]
 
-[node name="Fondo" type="CollisionShape3D" parent="Pavimento/StaticBody3D"]
+[node name="Fondo" type="CollisionShape3D" parent="Pavimento/StaticBody3D" unique_id=827652122]
 transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0.0010078431)
 shape = SubResource("WorldBoundaryShape3D_31fxm")
 debug_color = Color(0.078538485, 0.58480704, 0.7625632, 0.972549)
 
-[node name="Est" type="CollisionShape3D" parent="Pavimento/StaticBody3D"]
+[node name="Est" type="CollisionShape3D" parent="Pavimento/StaticBody3D" unique_id=991738265]
 transform = Transform3D(0.2, 0, 0, 0, 1, 0, 0, 0, 2, 1.1, 0.5, 0)
 shape = SubResource("BoxShape3D_06yma")
 
-[node name="Ovest" type="CollisionShape3D" parent="Pavimento/StaticBody3D"]
+[node name="Ovest" type="CollisionShape3D" parent="Pavimento/StaticBody3D" unique_id=1403249006]
 transform = Transform3D(0.2, 0, 0, 0, 1, 0, 0, 0, 2, -1.1, 0.5, 0)
 shape = SubResource("BoxShape3D_06yma")
 
-[node name="Nord" type="CollisionShape3D" parent="Pavimento/StaticBody3D"]
+[node name="Nord" type="CollisionShape3D" parent="Pavimento/StaticBody3D" unique_id=1077023923]
 transform = Transform3D(-8.742278e-09, 0, 2, 0, 1, 0, -0.2, 0, -8.742278e-08, 0, 0.5, 1.1)
 shape = SubResource("BoxShape3D_06yma")
 
-[node name="Sud" type="CollisionShape3D" parent="Pavimento/StaticBody3D"]
+[node name="Sud" type="CollisionShape3D" parent="Pavimento/StaticBody3D" unique_id=279776019]
 transform = Transform3D(-8.742278e-09, 0, 2, 0, 1, 0, -0.2, 0, -8.742278e-08, 0, 0.5, -1.1)
 shape = SubResource("BoxShape3D_06yma")
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 5.435877, 0)
-light_color = Color(0.8862745, 0.8156863, 0.77254903, 1)
-light_energy = 1.5
-
-[node name="Timer" type="Timer" parent="."]
+[node name="Timer" type="Timer" parent="." unique_id=740385397]
 wait_time = 120.0
 one_shot = true
 
-[node name="Speakers" type="Node" parent="."]
+[node name="Speakers" type="Node" parent="." unique_id=203917790]
 
-[node name="Altoparlante 1" parent="Speakers" instance=ExtResource("7_1d8q1")]
+[node name="Altoparlante 1" parent="Speakers" unique_id=1928711882 instance=ExtResource("7_1d8q1")]
 transform = Transform3D(-4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, 0, 1, -9, 4, 0)
 
-[node name="Altoparlante 2" parent="Speakers" instance=ExtResource("7_1d8q1")]
+[node name="Altoparlante 2" parent="Speakers" unique_id=1229703400 instance=ExtResource("7_1d8q1")]
 transform = Transform3D(1, 0, 0, 0, -0.34202012, 0.9396926, 0, -0.9396926, -0.34202012, 0, 4, 9)
 
-[node name="Altoparlante 3" parent="Speakers" instance=ExtResource("7_1d8q1")]
+[node name="Altoparlante 3" parent="Speakers" unique_id=1698661019 instance=ExtResource("7_1d8q1")]
 transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 9, 4, 0)
 
-[node name="Altoparlante 4" parent="Speakers" instance=ExtResource("7_1d8q1")]
+[node name="Altoparlante 4" parent="Speakers" unique_id=1096641512 instance=ExtResource("7_1d8q1")]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 4, -9)
+
+[node name="FarettoFisso" parent="." unique_id=1286617681 instance=ExtResource("8_k2rys")]
+transform = Transform3D(-0.81962496, 0, 0.5729003, 0, 1, 0, -0.5729003, 0, -0.81962496, 4.291892, 7.574, -2.0933056)
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
