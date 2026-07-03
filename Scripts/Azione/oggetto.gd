@@ -5,19 +5,22 @@ var mesh_instance: MeshInstance3D = null
 @export var model: PackedScene
 var box : BoxShape3D = BoxShape3D.new()
 
+@export var scale_factor: Vector3 = Vector3(1, 1, 1)
+
 @onready var area_occupata = $"Area occupata"
 var area_box = BoxShape3D.new()
 
 enum State {STORAGE, HAND, PLACED}
 var obj_state: State = State.STORAGE
 var player = null
-var half_height: float = 0.0
+#var half_height: float = 0.0
 
 func _ready() -> void:
 	if model: 
 		var istanza = model.instantiate()
 		#aggiungo scena come figlio del rigidbody così che si muovono assieme
 		add_child(istanza)
+		istanza.scale = scale_factor #scalo dimensione
 		#Axis aligned bounding box trovo dinamicamente più piccola box che copre l'oggetto
 		var aabb = AABB()
 		var all_children = istanza.find_children("*", "MeshInstance3D", true, false)
@@ -36,8 +39,8 @@ func _ready() -> void:
 		$"Area occupata/CollisionShape3D".position = aabb.get_center()
 		
 
-	var shape = $CollisionShape3D.shape as BoxShape3D
-	half_height = shape.size.y / 2.0
+	#var shape = $CollisionShape3D.shape as BoxShape3D
+	#half_height = shape.size.y / 2.0
 	
 	GameManager.registra_oggetti(self)
 	# se le  metto dall'editor non vengono ereditati da oggetti diversi
@@ -52,6 +55,7 @@ func _physics_process(delta: float) -> void:
 	if obj_state == State.HAND: 
 		var target_position = player.camera_3d.global_position + (player.camera_3d.global_transform.basis * Vector3(0, -0.3, -1.5))
 		global_position = global_position.lerp(target_position, delta*10) #delta valore piccolo il movimento risulterebbe lentissimo 
+		look_at(global_position - player.transform.basis.z) #quando afferrati devono guardare sempre il player
 		
 func pick_up(p) -> void: 
 	if obj_state == State.PLACED:

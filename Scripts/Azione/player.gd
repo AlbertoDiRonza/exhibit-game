@@ -66,7 +66,8 @@ func _input(event):
 					# il centro dell'oggetto (da cui determino la posizione relativa) è più in alto 
 					# se sottraessi metterei il metà oggetto sotto il pavimento
 					if is_floor:
-						held_objct.place(Vector3(place_position.x, place_position.y + held_objct.half_height, place_position.z))
+						#held_objct.place(Vector3(place_position.x, place_position.y + held_objct.half_height, place_position.z))
+						held_objct.place(Vector3(place_position.x, place_position.y, place_position.z))
 						place_position = Vector3.ZERO
 						held_objct = null
 			
