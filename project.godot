@@ -15,7 +15,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 [application]
 
 config/name="Exhibit!"
-run/main_scene="uid://ddsi2027judo6"
+run/main_scene="res://Scene/menu_principale.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="res://Assets/Immagini/icon.svg"
 

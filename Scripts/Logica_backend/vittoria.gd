@@ -3,7 +3,6 @@ extends Control
 @onready var retry_button: Button = $RetryButton
 @onready var quit_button: Button = $QuitButton
 
-# Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	retry_button.pressed.connect(_on_retry_pressed)

@@ -12,6 +12,7 @@ func _ready() -> void:
 	timer.start()
 	
 	GameManager.game_over.connect(_on_game_over)
+	GameManager.vittoria_raggiunta.connect(_on_vittoria_raggiunta)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
@@ -28,3 +29,6 @@ func _on_timer_timeout() -> void:
 
 func _on_game_over() -> void:
 	get_tree().change_scene_to_file("res://Scene/game_over.tscn")
+
+func _on_vittoria_raggiunta() -> void:
+	get_tree().change_scene_to_file("res://Scene/vittoria.tscn")

@@ -1,8 +1,19 @@
-[gd_scene load_steps=2 format=3 uid="uid://bn7b653fvbo6a"]
+[gd_scene format=3 uid="uid://bn7b653fvbo6a"]
 
 [ext_resource type="Script" uid="uid://tctsponmjm0b" path="res://Scripts/Logica_backend/game_over.gd" id="1_iosw2"]
+[ext_resource type="Texture2D" uid="uid://bjmlcpau8eesx" path="res://Assets/Immagini/crowd_sconfitta.png" id="2_crowd"]
+[ext_resource type="Texture2D" uid="uid://bvtfk22qa2nct" path="res://Assets/Immagini/direttore_sconfitta.png" id="3_direttore"]
 
-[node name="GameOver" type="Control"]
+[sub_resource type="Gradient" id="Gradient_sconfitta"]
+colors = PackedColorArray(0.45, 0.06, 0.06, 1, 0.03, 0.01, 0.01, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_sconfitta"]
+gradient = SubResource("Gradient_sconfitta")
+fill = 1
+fill_from = Vector2(0.5, 0.3)
+fill_to = Vector2(0.5, 1)
+
+[node name="GameOver" type="Control" unique_id=542338143]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -11,10 +22,95 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_iosw2")
 
-[node name="Game over" type="Label" parent="."]
-layout_mode = 0
-offset_left = 500.0
-offset_top = 300.0
-offset_right = 589.0
-offset_bottom = 323.0
+[node name="Sfondo" type="TextureRect" parent="." unique_id=390756214]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("GradientTexture2D_sconfitta")
+expand_mode = 1
+
+[node name="CrowdImage" type="TextureRect" parent="." unique_id=183062936]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.3
+anchor_right = 0.5
+anchor_bottom = 0.3
+offset_left = -310.0
+offset_top = -240.0
+offset_right = 310.0
+offset_bottom = 240.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_crowd")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="DirettoreImage" type="TextureRect" parent="." unique_id=297340468]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.28
+anchor_right = 0.5
+anchor_bottom = 0.28
+offset_left = -212.0
+offset_top = -144.44
+offset_right = 137.0
+offset_bottom = 254.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_direttore")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Title" type="Label" parent="." unique_id=1947623470]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.68
+anchor_right = 0.5
+anchor_bottom = 0.68
+offset_left = -219.0
+offset_top = -14.640015
+offset_right = 221.0
+offset_bottom = 45.359985
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 32
 text = "Game over!"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="RetryButton" type="Button" parent="." unique_id=485796717]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.8
+anchor_right = 0.5
+anchor_bottom = 0.8
+offset_left = -100.0
+offset_top = -30.0
+offset_right = 100.0
+offset_bottom = 30.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Riprova"
+
+[node name="QuitButton" type="Button" parent="." unique_id=1749405948]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.9
+anchor_right = 0.5
+anchor_bottom = 0.9
+offset_left = -100.0
+offset_top = -30.0
+offset_right = 100.0
+offset_bottom = 30.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Esci"

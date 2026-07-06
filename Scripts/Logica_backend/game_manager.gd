@@ -21,6 +21,20 @@ signal vittoria_raggiunta
 func _ready() -> void:
 	pass
 
+# Chiamata prima di (ri)caricare main_scene.tscn (da menu, riprova dopo
+# vittoria o riprova dopo sconfitta). GameManager è un autoload: senza questo
+# reset esplicito, fatica_tot e le altre variabili restano quelle
+# dell'ultima partita, invece di ripartire puliti.
+func reset_stato() -> void:
+	oggetti_illuminati.clear()
+	coppie_vicine.clear()
+	fatica_tot = 100.0
+	oggetti.clear()
+	speakers.clear()
+	brkn_speaker = null
+	brk_timer = randf_range(brk_time_min, brk_time_max)
+	quota_fatica_oggetto = 0.0
+
 # 1. IL CALCOLO DEL MURO INVALICABILE
 func calcola_limite_minimo() -> float:
 	var limite = 0.0

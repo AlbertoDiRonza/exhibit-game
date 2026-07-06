@@ -16,3 +16,6 @@ addons/
 
 # File di sistema macOS
 .DS_Store
+
+# Documentazione tecnica AR: solo locale, non nel repo
+Exhibit_AR_Documentazione_Tecnica.docx

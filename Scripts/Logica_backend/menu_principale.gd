@@ -1,15 +1,14 @@
 extends Control
 
-@onready var retry_button: Button = $RetryButton
+@onready var play_button: Button = $PlayButton
 @onready var quit_button: Button = $QuitButton
 
-# Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-	retry_button.pressed.connect(_on_retry_pressed)
+	play_button.pressed.connect(_on_play_pressed)
 	quit_button.pressed.connect(_on_quit_pressed)
 
-func _on_retry_pressed() -> void:
+func _on_play_pressed() -> void:
 	GameManager.reset_stato()
 	get_tree().change_scene_to_file("res://Scene/main_scene.tscn")
 

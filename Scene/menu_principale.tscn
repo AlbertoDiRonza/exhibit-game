@@ -1,0 +1,73 @@
+[gd_scene format=3 uid="uid://bkfpdrmie2vbh"]
+
+[ext_resource type="Script" uid="uid://dtuoawbv0lets" path="res://Scripts/Logica_backend/menu_principale.gd" id="1_menu"]
+[ext_resource type="Texture2D" uid="uid://m17pbptgx06e" path="res://Assets/Immagini/copertina_menu.png" id="2_copertina"]
+
+[node name="MenuPrincipale" type="Control" unique_id=2105112975]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_menu")
+
+[node name="Copertina" type="TextureRect" parent="." unique_id=452512874]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 3.0
+offset_top = -3.0
+offset_right = 1.0
+offset_bottom = 118.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_copertina")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Title" type="Label" parent="." unique_id=1599007665]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.6
+anchor_bottom = 0.6
+offset_left = 74.0
+offset_top = -210.80002
+offset_right = 534.0
+offset_bottom = -35.80002
+grow_vertical = 2
+rotation = -0.05235988
+theme_override_colors/font_color = Color(0.98, 0.85, 0.55, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.5)
+theme_override_colors/font_outline_color = Color(0.22, 0.11, 0.04, 1)
+theme_override_constants/shadow_offset_x = 4
+theme_override_constants/shadow_offset_y = 4
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/font_size = 128
+text = "Exhibit!"
+vertical_alignment = 1
+
+[node name="PlayButton" type="Button" parent="." unique_id=345144114]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.73
+anchor_bottom = 0.73
+offset_left = 161.0
+offset_top = -102.04001
+offset_right = 381.0
+offset_bottom = -42.04001
+grow_vertical = 2
+text = "Gioca"
+
+[node name="QuitButton" type="Button" parent="." unique_id=1440940325]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.83
+anchor_bottom = 0.83
+offset_left = 162.0
+offset_top = -85.839966
+offset_right = 382.0
+offset_bottom = -25.839966
+grow_vertical = 2
+text = "Esci"
