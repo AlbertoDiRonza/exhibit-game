@@ -87,7 +87,7 @@ func ricontrolla_prossimita() -> void:
 func _on_area_occupata_area_entered(area: Area3D) -> void:
 	var proximity_obj = area.get_parent()
 	
-	# Il filtro di sicurezza per evitare che Godot crashi leggendo il faretto!
+	# L'area del faretto può interagire con l'oggetto, ma non avendo obj_state fa crashare godot
 	if proximity_obj and "obj_state" in proximity_obj:
 		if self.obj_state == State.PLACED and proximity_obj.obj_state == State.PLACED:
 			GameManager.registra_coppia(self, proximity_obj)

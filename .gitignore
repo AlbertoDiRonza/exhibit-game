@@ -1,3 +1,18 @@
 .godot/
 *.import
 export_presets.cfg
+
+# Cache di build dell'export Android di Godot (generata, non va committata)
+android/
+
+# Clone sorgente del plugin ARCore usato per compilare il .aar (esterno al
+# gioco, ~500MB)
+godot_arcore/
+
+# Plugin ARCore compilato: resta solo in locale, il collega non lo scarica
+# dal repo (vedi ARCORE_BUILD_STEPS.md / documentazione AR per come
+# procurarselo)
+addons/
+
+# File di sistema macOS
+.DS_Store

@@ -23,7 +23,7 @@ func _process(delta: float) -> void:
 
 func _on_body_entered(body: Node3D) -> void:
 	# Filtro rigoroso: reagisce SOLO se l'oggetto è nel gruppo "scultura"
-	if body.is_in_group("scultura"):
+	if body.get("is_artwork"):
 		opera_sotto_luce = body
 		illumina_scultura(body, true)
 		print("🔥 Opera d'arte sotto la luce! Fatica in discesa.")

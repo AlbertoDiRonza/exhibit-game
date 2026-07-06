@@ -3,12 +3,13 @@
 [ext_resource type="Script" uid="uid://dojhxotaxjubo" path="res://Scripts/Logica_backend/galleria.gd" id="1_4kvl3"]
 [ext_resource type="PackedScene" uid="uid://bdt3wcu1yu11e" path="res://Scene/oggetto.tscn" id="1_06yma"]
 [ext_resource type="PackedScene" uid="uid://2yvw3svgyr4d" path="res://Scene/player.tscn" id="1_j4qrl"]
-[ext_resource type="PackedScene" uid="uid://c88d6lnlibyn7" path="res://Assets/3D_models/statue_ancient_woman/Venus of Milo.glb" id="3_lttqn"]
-[ext_resource type="PackedScene" uid="uid://d31h227ickewo" path="res://Assets/3D_models/table1/Antigue Table.glb" id="4_lee88"]
+[ext_resource type="PackedScene" uid="uid://d18n11nvafd7h" path="res://Assets/3D_models/statue_ancient_woman/Venus of Milo.glb" id="3_lttqn"]
+[ext_resource type="PackedScene" uid="uid://ct2hjn1li1ptg" path="res://Assets/3D_models/table1/Antigue Table.glb" id="4_lee88"]
 [ext_resource type="PackedScene" uid="uid://beqlgo34io4dj" path="res://Scene/altoparlante.tscn" id="7_1d8q1"]
 [ext_resource type="PackedScene" uid="uid://mi1cbbkphe8h" path="res://Scene/faretto_fisso.tscn" id="8_k2rys"]
 
 [sub_resource type="Environment" id="Environment_06yma"]
+background_mode = 0
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_oqhxj"]
 

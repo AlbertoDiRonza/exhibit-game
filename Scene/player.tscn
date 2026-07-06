@@ -1,31 +1,32 @@
-[gd_scene load_steps=4 format=3 uid="uid://2yvw3svgyr4d"]
+[gd_scene format=3 uid="uid://2yvw3svgyr4d"]
 
 [ext_resource type="Script" uid="uid://cwm6gq7gspxw8" path="res://Scripts/Azione/player.gd" id="1_kelma"]
 [ext_resource type="Script" uid="uid://c52olotnciidv" path="res://Scripts/Azione/mirino.gd" id="2_y8w33"]
+[ext_resource type="Script" path="res://Scripts/Azione/virtual_joystick.gd" id="3_vjoy"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_j47wa"]
 height = 2.963379
 
-[node name="Player" type="Node3D"]
+[node name="Player" type="Node3D" unique_id=1034395408]
 
-[node name="CharacterBody3D" type="CharacterBody3D" parent="."]
+[node name="CharacterBody3D" type="CharacterBody3D" parent="." unique_id=1428037070]
 script = ExtResource("1_kelma")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D" unique_id=1299185803]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.48168945, 0)
 shape = SubResource("CapsuleShape3D_j47wa")
 
-[node name="Camera3D" type="Camera3D" parent="CharacterBody3D"]
+[node name="Camera3D" type="Camera3D" parent="CharacterBody3D" unique_id=1508030663]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
 
-[node name="XROrigin3D" type="XROrigin3D" parent="CharacterBody3D"]
+[node name="XROrigin3D" type="XROrigin3D" parent="CharacterBody3D" unique_id=2036123546]
 
-[node name="XRCamera3D" type="XRCamera3D" parent="CharacterBody3D/XROrigin3D"]
+[node name="XRCamera3D" type="XRCamera3D" parent="CharacterBody3D/XROrigin3D" unique_id=1934582031]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
 
-[node name="HUD" type="CanvasLayer" parent="CharacterBody3D"]
+[node name="HUD" type="CanvasLayer" parent="CharacterBody3D" unique_id=1649509136]
 
-[node name="mirino" type="Control" parent="CharacterBody3D/HUD"]
+[node name="mirino" type="Control" parent="CharacterBody3D/HUD" unique_id=891009193]
 layout_mode = 3
 anchors_preset = 8
 anchor_left = 0.5
@@ -40,7 +41,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("2_y8w33")
 
-[node name="interact" type="Label" parent="CharacterBody3D/HUD"]
+[node name="interact" type="Label" parent="CharacterBody3D/HUD" unique_id=1744532398]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -54,29 +55,60 @@ grow_horizontal = 2
 grow_vertical = 2
 text = "Press 'E' to pick up"
 
-[node name="barra fatica" type="ProgressBar" parent="CharacterBody3D/HUD"]
+[node name="barra fatica" type="ProgressBar" parent="CharacterBody3D/HUD" unique_id=448997593]
 offset_left = 411.0
 offset_top = 28.0
 offset_right = 759.0
 offset_bottom = 55.0
 
-[node name="Timer" type="Label" parent="CharacterBody3D/HUD"]
+[node name="Timer" type="Label" parent="CharacterBody3D/HUD" unique_id=220427655]
 offset_left = 821.0
 offset_top = 30.0
 offset_right = 861.0
 offset_bottom = 53.0
 text = "00:00"
 
-[node name="interact_spk" type="Label" parent="CharacterBody3D/HUD"]
+[node name="interact_spk" type="Label" parent="CharacterBody3D/HUD" unique_id=263728711]
 offset_left = 504.0
 offset_top = 312.0
 offset_right = 680.0
 offset_bottom = 335.0
 text = "Long press 'E' to repair"
 
-[node name="barra_riparazione" type="ProgressBar" parent="CharacterBody3D/HUD"]
+[node name="barra_riparazione" type="ProgressBar" parent="CharacterBody3D/HUD" unique_id=1496310160]
 offset_left = 547.0
 offset_top = 341.0
 offset_right = 648.0
 offset_bottom = 368.0
 max_value = 1.0
+
+[node name="VirtualJoystick" type="Control" parent="CharacterBody3D/HUD"]
+visible = false
+layout_mode = 3
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 40.0
+offset_top = -240.0
+offset_right = 240.0
+offset_bottom = -40.0
+grow_vertical = 0
+mouse_filter = 0
+script = ExtResource("3_vjoy")
+
+[node name="PickupButton" type="Button" parent="CharacterBody3D/HUD"]
+visible = false
+disabled = true
+layout_mode = 3
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -220.0
+offset_top = -120.0
+offset_right = -40.0
+offset_bottom = -60.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "Raccogli"

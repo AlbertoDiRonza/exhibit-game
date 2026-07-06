@@ -26,7 +26,3 @@ func repair() -> void:
 	self.spk_state = State.FUNCTIONING
 	GameManager.brkn_speaker = null
 	noise.stop()
-	GameManager.timer_rottura_spk = 0.0
-	GameManager.fatica_tot -= GameManager.fatica_tot_rimossa_spk
-	GameManager.fatica_changed.emit(GameManager.fatica_tot)
-	GameManager.fatica_tot_rimossa_spk = 0.0

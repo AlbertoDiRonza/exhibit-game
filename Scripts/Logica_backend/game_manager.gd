@@ -12,9 +12,7 @@ var brkn_speaker = null
 var brk_time_min: float = 10.0
 var brk_time_max: float = 30.0
 var brk_timer: float = randf_range(brk_time_min, brk_time_max)
-var timer_rottura_spk: float = 0.0 
-var quota_fatica_spk : float = 1.0 
-var fatica_tot_rimossa_spk: float = 0.0
+
 
 @warning_ignore("unused_signal")
 signal game_over
@@ -44,12 +42,6 @@ func _process(delta: float) -> void:
 			brkn_speaker = speakers.pick_random()
 			brk_timer = randf_range(brk_time_min, brk_time_max)
 			
-	if brkn_speaker != null: 
-		timer_rottura_spk += delta
-		if timer_rottura_spk >= 2.0: 
-			fatica_tot += quota_fatica_spk
-			fatica_tot_rimossa_spk += quota_fatica_spk
-			timer_rottura_spk = 0.0
 
 	var limite_minimo = calcola_limite_minimo()
 

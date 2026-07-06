@@ -6,6 +6,7 @@ extends Node3D
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	print("GALLERIA READY")
 	#questo è chiamato per ultimo dopo aver chiamato tutti i nodi figli
 	GameManager.calcola_quote()
 	timer.start()
