@@ -135,6 +135,6 @@ func aggiorna_testo() -> void:
 		Step.RIPARA_SPEAKER:
 			testo_tutorial.text = "ALLARME!\nIl rumore aumenta la fatica e la luce salta!\nCorri allo speaker e tieni premuto 'E' per ripararlo."
 		Step.PORTA_SOTTO_LUCE:
-			testo_tutorial.text = "Silenzio, finalmente.\nOra prendi di nuovo la statua\n e posala sotto la luce del faretto\nper azzerare la fatica."
+			testo_tutorial.text = "Silenzio, finalmente. Ora prendi di nuovo la statua\n e posala sotto la luce del faretto\nper azzerare la fatica."
 		Step.FINE:
 			testo_tutorial.text = "TUTORIAL COMPLETATO!\nSei pronto per il gioco vero."

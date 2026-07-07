@@ -53,7 +53,13 @@ func _ready() -> void:
 		$CollisionShape3D.shape = box
 		$CollisionShape3D.position = aabb.get_center() * fattore_scala
 
-		area_box.size = aabb.size * 2.5 * fattore_scala
+		# Moltiplicatore: 2.5 originale -> 1.4 (per far stare più oggetti sotto
+		# lo stesso faretto) -> 1.8 (leggero riallargamento su richiesta, ora
+		# che c'è anche un terzo faretto a dare più spazio in giro). Resta
+		# comunque più larga della sagoma reale dell'oggetto, quindi il malus
+		# da vicinanza c'è ancora se li ammassi, solo con più margine prima
+		# di scattare rispetto a 1.4.
+		area_box.size = aabb.size * 1.8 * fattore_scala
 		$"Area occupata/CollisionShape3D".shape = area_box
 		$"Area occupata/CollisionShape3D".position = aabb.get_center() * fattore_scala
 

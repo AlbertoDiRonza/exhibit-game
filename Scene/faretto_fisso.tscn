@@ -248,8 +248,8 @@ albedo_texture = SubResource("MeshTexture_m5c6a")
 [sub_resource type="SphereMesh" id="SphereMesh_oykm7"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_o88rc"]
-height = 2.0
-radius = 1.2
+height = 3.6
+radius = 2.0
 
 [node name="FarettoFisso" type="StaticBody3D" unique_id=1286617681]
 script = ExtResource("1_fsbhe")
@@ -310,8 +310,8 @@ mesh = SubResource("SphereMesh_oykm7")
 [node name="SpotLight3D" type="SpotLight3D" parent="." unique_id=1792885648]
 transform = Transform3D(1, 0, 0, 0, -0.7071068, 0.7071067, 0, -0.7071067, -0.7071068, 0.029615551, -0.72473234, 0.22132206)
 shadow_enabled = true
-spot_range = 15.535
-spot_angle = 31.265903
+spot_range = 18.0
+spot_angle = 40.0
 
 [node name="ConoLuce" type="Area3D" parent="." unique_id=804511408]
 
