@@ -14,6 +14,12 @@ var obj_state: State = State.STORAGE
 var player = null
 var half_height: float = 0.0
 
+# Vero se l'ULTIMO posizionamento di quest'oggetto era sotto un faretto
+# acceso e ha quindi scalato la quota fatica. Serve per sapere, quando lo
+# si riprende in mano, se restituire la quota oppure no (altrimenti si
+# potrebbe raccogliere fatica gratis piazzando fuori dalla luce).
+var luce_applicata: bool = false
+
 func _ready() -> void:
 	if model: 
 		var istanza = model.instantiate()
@@ -48,36 +54,57 @@ func _physics_process(delta: float) -> void:
 		var target_position = player.camera_3d.global_position + (player.camera_3d.global_transform.basis * Vector3(0, -0.3, -1.5))
 		global_position = global_position.lerp(target_position, delta * 10) 
 
-func pick_up(p) -> void: 
+func pick_up(p) -> void:
 	if obj_state == State.PLACED:
-		# Restituisce la fatica solo se è un'opera d'arte
-		if is_artwork:
-			GameManager.fatica_tot += GameManager.quota_fatica_oggetto
-			GameManager.fatica_changed.emit(GameManager.fatica_tot)
-			
+		# Restituisce la fatica solo se era stata effettivamente scalata
+		# (cioè solo se questo posizionamento era sotto una luce accesa)
+		if is_artwork and luce_applicata:
+			GameManager.modifica_fatica(GameManager.quota_fatica_oggetto)
+		luce_applicata = false
+
 	obj_state = State.HAND
 	player = p
 	freeze = true
 	collision_layer = 0
 	collision_mask = 0
 
-func place(p: Vector3) -> void: 
+func place(p: Vector3) -> void:
 	obj_state = State.PLACED
 	player = null
 	global_position = p
-	
-	# Sottrae la fatica solo se è un'opera d'arte
-	if is_artwork:
-		GameManager.fatica_tot -= GameManager.quota_fatica_oggetto
-		GameManager.fatica_changed.emit(GameManager.fatica_tot)
-		
 	freeze = false
 	collision_layer = 1
 	collision_mask = 1
-	
-	# Assicura la sincronizzazione del motore fisico prima di controllare chi ha intorno
+
+	# Assicura la sincronizzazione del motore fisico prima di controllare chi ha
+	# intorno E prima di controllare se siamo dentro il cono di un faretto
+	# acceso. Aspettiamo un paio di frame fisici invece di uno solo: essendo
+	# un teletrasporto (global_position diretto, non un movimento fisico), il
+	# motore potrebbe impiegare un frame in più ad aggiornare le collisioni.
 	await get_tree().physics_frame
+	await get_tree().physics_frame
+
+	# La quota fatica si scala una volta sola, e SOLO se l'opera è finita
+	# sotto un faretto acceso: questa è la meccanica corretta (in precedenza
+	# scattava sempre, a prescindere dalla luce, ed era per questo che
+	# muovere gli oggetti causava riduzioni non volute).
+	var sotto_luce = is_artwork and _sotto_faretto_acceso()
+	if sotto_luce:
+		luce_applicata = true
+		GameManager.modifica_fatica(-GameManager.quota_fatica_oggetto)
+	else:
+		luce_applicata = false
+
 	ricontrolla_prossimita()
+
+# Chiede direttamente a ogni faretto in scena se in questo momento mi sta
+# illuminando (invece di fidarsi di un array aggiornato da un segnale che, a
+# volte, non aveva ancora fatto in tempo a scattare subito dopo place()).
+func _sotto_faretto_acceso() -> bool:
+	for faretto in get_tree().get_nodes_in_group("faretti"):
+		if faretto.illumina_adesso(self):
+			return true
+	return false
 
 func ricontrolla_prossimita() -> void:
 	var aree_sovrapposte = area_occupata.get_overlapping_areas()

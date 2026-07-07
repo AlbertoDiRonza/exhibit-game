@@ -148,15 +148,20 @@ func _input(event):
 				Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 				
 		if event is InputEventKey and event.pressed:
-			if focused_objct: 
-				if event.keycode == KEY_E:
+			# Con uno speaker che sta facendo rumore non si può RACCOGLIERE un
+			# nuovo oggetto. Posizionare quello che hai già in mano resta
+			# sempre permesso, altrimenti se il rumore parte mentre tieni
+			# qualcosa in mano resti bloccato (non puoi nemmeno riparare lo
+			# speaker, dato che serve avere le mani libere).
+			if focused_objct:
+				if event.keycode == KEY_E and GameManager.brkn_speaker == null:
 					focused_objct.pick_up(self)
 					held_objct = focused_objct
 					focused_objct = null
 			elif held_objct:
 				if event.keycode == KEY_E:
 					# result_place.position è la posione della collisione del ray cast con il pavimento
-					# il centro dell'oggetto (da cui determino la posizione relativa) è più in alto 
+					# il centro dell'oggetto (da cui determino la posizione relativa) è più in alto
 					# se sottraessi metterei il metà oggetto sotto il pavimento
 					if is_floor:
 						#held_objct.place(Vector3(place_position.x, place_position.y + held_objct.half_height, place_position.z))
@@ -289,18 +294,26 @@ func _update_pickup_button() -> void:
 	if not pickup_button:
 		return
 	if held_objct:
-		pickup_button.disabled = not is_floor
+		# Posizionare quello che hai già in mano resta sempre permesso, anche
+		# con uno speaker rumoroso: altrimenti resteresti bloccato con
+		# l'oggetto in mano finché non lo ripari (e per riparare servono le
+		# mani libere).
 		pickup_button.text = "Posiziona"
+		pickup_button.disabled = not is_floor
 	elif focused_objct:
-		pickup_button.disabled = false
 		pickup_button.text = "Raccogli"
+		# Con uno speaker che sta facendo rumore non si può raccogliere un
+		# nuovo oggetto.
+		pickup_button.disabled = (GameManager.brkn_speaker != null)
 	else:
-		pickup_button.disabled = true
 		pickup_button.text = "Raccogli"
+		pickup_button.disabled = true
 
 
 func _on_pickup_button_pressed() -> void:
 	if focused_objct:
+		if GameManager.brkn_speaker != null:
+			return
 		focused_objct.pick_up(self)
 		held_objct = focused_objct
 		focused_objct = null

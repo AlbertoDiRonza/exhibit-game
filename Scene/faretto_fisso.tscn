@@ -248,8 +248,8 @@ albedo_texture = SubResource("MeshTexture_m5c6a")
 [sub_resource type="SphereMesh" id="SphereMesh_oykm7"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_o88rc"]
-height = 13.018738
-radius = 8.25
+height = 2.0
+radius = 1.2
 
 [node name="FarettoFisso" type="StaticBody3D" unique_id=1286617681]
 script = ExtResource("1_fsbhe")

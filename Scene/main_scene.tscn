@@ -86,4 +86,7 @@ transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 4
 [node name="FarettoFisso" parent="." unique_id=1286617681 instance=ExtResource("8_k2rys")]
 transform = Transform3D(-0.81962496, 0, 0.5729003, 0, 1, 0, -0.5729003, 0, -0.81962496, 4.291892, 7.574, -2.0933056)
 
+[node name="FarettoFisso2" parent="." instance=ExtResource("8_k2rys")]
+transform = Transform3D(0.81962496, 0, -0.5729003, 0, 1, 0, 0.5729003, 0, 0.81962496, -4.291892, 7.574, 2.0933056)
+
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
