@@ -30,11 +30,11 @@ func _fattore_scala() -> float:
 	# medio, il grande quasi il doppio.
 	match taglia:
 		Taglia.PICCOLO:
-			return 0.55
-		Taglia.MEDIO:
 			return 1.0
+		Taglia.MEDIO:
+			return 2.0
 		Taglia.GRANDE:
-			return 1.75
+			return 4.0
 	return 1.0
 
 # Called when the node enters the scene tree for the first time.

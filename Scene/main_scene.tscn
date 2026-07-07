@@ -7,7 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://ct2hjn1li1ptg" path="res://Assets/3D_models/table1/Antigue Table.glb" id="4_lee88"]
 [ext_resource type="PackedScene" uid="uid://beqlgo34io4dj" path="res://Scene/altoparlante.tscn" id="7_1d8q1"]
 [ext_resource type="PackedScene" uid="uid://mi1cbbkphe8h" path="res://Scene/faretto_fisso.tscn" id="8_k2rys"]
-[ext_resource type="PackedScene" path="res://Scene/timer_muro.tscn" id="9_timermuro"]
+[ext_resource type="PackedScene" uid="uid://u751lf3nvup0" path="res://Scene/timer_muro.tscn" id="9_timermuro"]
 [ext_resource type="PackedScene" path="res://Scene/pavimento.tscn" id="10_pavimento"]
 
 [sub_resource type="Environment" id="Environment_06yma"]
@@ -30,7 +30,7 @@ model = ExtResource("4_lee88")
 
 [node name="Player" parent="." unique_id=464050550 instance=ExtResource("1_j4qrl")]
 
-[node name="Pavimento" parent="." instance=ExtResource("10_pavimento")]
+[node name="Pavimento" parent="." unique_id=857187435 instance=ExtResource("10_pavimento")]
 
 [node name="Timer" type="Timer" parent="." unique_id=740385397]
 wait_time = 60.0
@@ -40,7 +40,6 @@ one_shot = true
 
 [node name="Altoparlante 1" parent="Speakers" unique_id=1928711882 instance=ExtResource("7_1d8q1")]
 transform = Transform3D(-4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, 0, 1, -9, 4, 0)
-taglia = 0
 
 [node name="Altoparlante 2" parent="Speakers" unique_id=1229703400 instance=ExtResource("7_1d8q1")]
 transform = Transform3D(1, 0, 0, 0, -0.34202012, 0.9396926, 0, -0.9396926, -0.34202012, 0, 4, 9)

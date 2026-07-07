@@ -37,6 +37,7 @@ func cambia_scena(percorso: String) -> void:
 	await _dissolvi(1.0)
 
 	get_tree().change_scene_to_file(percorso)
+	MusicManager.riavvia()
 
 	# Aspettiamo un paio di frame per essere sicuri che la nuova scena sia
 	# già entrata nell'albero prima di iniziare la dissolvenza in apertura:

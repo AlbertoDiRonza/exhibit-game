@@ -19,3 +19,7 @@ addons/
 
 # Documentazione tecnica AR: solo locale, non nel repo
 Exhibit_AR_Documentazione_Tecnica.docx
+
+# Traccia audio originale da 11 minuti (206MB): in gioco si usa solo
+# Assets/Sound/gamemusic.ogg (segmento tagliato), questo resta solo locale
+Assets/Sound/gamemusic.flac

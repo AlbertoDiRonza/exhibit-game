@@ -33,7 +33,13 @@ func _on_timer_timeout() -> void:
 	GameManager.game_over.emit()
 
 func _on_game_over() -> void:
+	# Se un altoparlante era rimasto rotto proprio alla fine, azzeriamo il
+	# riferimento: altrimenti MusicManager continuerebbe a vedere uno speaker
+	# rotto e lascerebbe la musica in pausa anche nella schermata di game over,
+	# dove non c'è più nulla da riparare.
+	GameManager.brkn_speaker = null
 	SceneTransition.cambia_scena("res://Scene/game_over.tscn")
 
 func _on_vittoria_raggiunta() -> void:
+	GameManager.brkn_speaker = null
 	SceneTransition.cambia_scena("res://Scene/vittoria.tscn")
