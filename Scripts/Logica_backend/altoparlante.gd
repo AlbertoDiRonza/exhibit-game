@@ -25,27 +25,44 @@ func tempo_riparazione() -> float:
 	return 3.0
 
 func _fattore_scala() -> float:
+	# Differenza resa più marcata (era 0.75/1.0/1.35, troppo simile per essere
+	# notata a colpo d'occhio in gioco): ora il piccolo è quasi la metà del
+	# medio, il grande quasi il doppio.
 	match taglia:
 		Taglia.PICCOLO:
-			return 0.75
+			return 0.55
 		Taglia.MEDIO:
 			return 1.0
 		Taglia.GRANDE:
-			return 1.35
+			return 1.75
 	return 1.0
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	# La taglia scala l'intero nodo (modello + CollisionShape3D, entrambi
-	# figli di questo StaticBody3D): uno speaker "grande" è visivamente più
-	# grande e ha anche un'area di collisione proporzionalmente più grande.
-	scale = Vector3.ONE * _fattore_scala()
+	var fattore = _fattore_scala()
 
 	if model:
 		var istanza = model.instantiate()
 		add_child(istanza)
 
+		# Scaliamo il modello importato direttamente (non il StaticBody3D
+		# radice): scalare il nodo radice non dava risultati affidabili in
+		# pratica, probabilmente perché il modello importato dal .glb non
+		# eredita in modo prevedibile la scala del genitore.
+		istanza.scale = Vector3.ONE * fattore
+
 		GameManager.registra_speakers(self)
+
+	# La CollisionShape3D usa una BoxShape3D condivisa da TUTTE le istanze di
+	# questa scena (definita una sola volta nel file .tscn): ridimensionarla
+	# "sul posto" cambierebbe la taglia di ogni speaker della galleria insieme.
+	# La duplichiamo per-istanza prima di scalarla.
+	var collision_shape := $CollisionShape3D as CollisionShape3D
+	if collision_shape and collision_shape.shape is BoxShape3D:
+		var base_shape := collision_shape.shape as BoxShape3D
+		var shape_scalata := base_shape.duplicate() as BoxShape3D
+		shape_scalata.size = base_shape.size * fattore
+		collision_shape.shape = shape_scalata
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:

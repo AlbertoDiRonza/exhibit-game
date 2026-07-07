@@ -3,9 +3,9 @@ extends RigidBody3D
 @export var is_artwork: bool = true
 @export var model: PackedScene
 
-# Fattore di scala visivo/fisico dell'intero oggetto (mesh + collisioni +
-# area di prossimità, che sono tutti figli di questo nodo e quindi ereditano
-# la sua scala). 2.0 = il doppio della taglia originale del modello.
+# Fattore di scala visivo/fisico dell'intero oggetto (mesh + collisione +
+# area di prossimità, scalate esplicitamente in _ready()). 2.0 = il doppio
+# della taglia originale del modello.
 @export var fattore_scala: float = 2.0
 
 var mesh_instance: MeshInstance3D = null
@@ -26,31 +26,36 @@ var half_height: float = 0.0
 var luce_applicata: bool = false
 
 func _ready() -> void:
-	# Scala l'intero nodo (mesh importata, CollisionShape3D e "Area occupata"
-	# sono tutti figli di questo RigidBody3D, quindi seguono la stessa scala):
-	# le dimensioni di collisione calcolate sotto restano sempre coerenti con
-	# quello che si vede, qualunque sia fattore_scala.
-	scale = Vector3.ONE * fattore_scala
-
 	if model:
 		var istanza = model.instantiate()
 		add_child(istanza)
-		
+
+		# Scaliamo direttamente il modello importato (non il RigidBody3D
+		# radice): scalare il nodo radice non dava risultati affidabili,
+		# probabilmente perché il modello importato dal .glb ha un nodo con
+		# "top_level" attivo o comunque non eredita in modo prevedibile la
+		# scala del genitore. Scalando "istanza" (che è il nodo del modello
+		# stesso) l'effetto visivo è garantito.
+		istanza.scale = Vector3.ONE * fattore_scala
+
 		var aabb = AABB()
 		var all_children = istanza.find_children("*", "MeshInstance3D", true, false)
 		for child in all_children:
 			if child is MeshInstance3D:
 				mesh_instance = child
 				aabb = mesh_instance.get_aabb()
-		
-		box.size = aabb.size * 0.8
+
+		# Le collisioni (CollisionShape3D e "Area occupata") sono create qui
+		# da zero ogni volta (BoxShape3D.new()), quindi non sono condivise
+		# con altri oggetti: moltiplichiamo direttamente per fattore_scala,
+		# così restano coerenti con il modello appena scalato.
+		box.size = aabb.size * 0.8 * fattore_scala
 		$CollisionShape3D.shape = box
-		$CollisionShape3D.position = aabb.get_center()
-		
-		# Trova questa riga dentro la funzione _ready() di oggetto.gd:
-		area_box.size = aabb.size * 2.5 
+		$CollisionShape3D.position = aabb.get_center() * fattore_scala
+
+		area_box.size = aabb.size * 2.5 * fattore_scala
 		$"Area occupata/CollisionShape3D".shape = area_box
-		$"Area occupata/CollisionShape3D".position = aabb.get_center()
+		$"Area occupata/CollisionShape3D".position = aabb.get_center() * fattore_scala
 
 	var shape = $CollisionShape3D.shape as BoxShape3D
 	if shape:

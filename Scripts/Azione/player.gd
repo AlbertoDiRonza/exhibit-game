@@ -14,15 +14,20 @@ var is_xr_active: bool = false
 @onready var barra_riparazione: ProgressBar = $HUD/barra_riparazione
 @onready var virtual_joystick: ArTouchJoystick = $HUD/VirtualJoystick
 @onready var pickup_button: Button = $HUD/PickupButton
+@onready var repair_button: Button = $HUD/RepairButton
 
 var held_objct: RigidBody3D = null
 var focused_objct: RigidBody3D = null
 var focused_speaker : StaticBody3D = null
 
 var place_position: Vector3
-var is_floor: bool 
+var is_floor: bool
 
 var repair_timer: float = 0.0
+
+# In AR non c'è il tasto E da tenere premuto: il RepairButton simula la
+# stessa cosa con button_down/button_up (vedi _on_repair_button_down/up).
+var is_repairing_ar: bool = false
 
 func _ready():
 	# Su Android proviamo prima ARCore (AR passthrough su telefono),
@@ -69,26 +74,31 @@ func _ready():
 			camera_3d.current = false
 			if crosshair:
 				crosshair.visible = false
-			# _physics_process_ar() non aggiorna questi elementi (pensati per
-			# l'interazione da PC, con label/barra a testo fisso); li
-			# nascondiamo qui una volta per tutte, altrimenti restavano
-			# sempre visibili nella loro posizione di default a schermo.
+			# label_interazione e label_interazione_spk sono pensate per il
+			# testo fisso dell'interazione da PC (tasto E): in AR il loro
+			# ruolo è preso dal testo dei bottoni touch, quindi restano
+			# nascoste una volta per tutte. barra_riparazione invece la
+			# riusiamo anche in AR (vedi _physics_process_ar), quindi non la
+			# nascondiamo qui: la sua visibilità è gestita dinamicamente.
 			if label_interazione:
 				label_interazione.visible = false
 			if label_interazione_spk:
 				label_interazione_spk.visible = false
-			if barra_riparazione:
-				barra_riparazione.visible = false
 			# HUD touch dedicato all'AR: joystick virtuale per lo spostamento
 			# (in AR "transform.basis" del CharacterBody3D non ruota da solo
-			# camminando fisicamente, serve un input esplicito) e pulsante
-			# per raccogliere/posizionare gli oggetti al posto del tasto E,
-			# che su schermo touch non esiste.
+			# camminando fisicamente, serve un input esplicito), pulsante per
+			# raccogliere/posizionare gli oggetti al posto del tasto E, e
+			# pulsante per riparare lo speaker (tenuto premuto, al posto del
+			# tasto E tenuto premuto su PC), che su schermo touch non esiste.
 			if virtual_joystick:
 				virtual_joystick.visible = true
 			if pickup_button:
 				pickup_button.visible = true
 				pickup_button.pressed.connect(_on_pickup_button_pressed)
+			if repair_button:
+				repair_button.visible = true
+				repair_button.button_down.connect(_on_repair_button_down)
+				repair_button.button_up.connect(_on_repair_button_up)
 			if interface_name == "ARCore":
 				# Abilita il rilevamento dei piani orizzontali/verticali e
 				# il posizionamento istantaneo, utili per l'interazione AR reale.
@@ -218,7 +228,7 @@ func _physics_process_pc(delta):
 		_update_place_raycast(camera_3d.global_position, camera_3d.global_transform.basis)
 
 
-func _physics_process_ar(_delta):
+func _physics_process_ar(delta):
 	# Movimento da joystick virtuale: la direzione è relativa a dove sta
 	# guardando la XRCamera3D (proiettata sul piano orizzontale), perché il
 	# CharacterBody3D in AR non ruota mai da solo camminando fisicamente —
@@ -247,6 +257,30 @@ func _physics_process_ar(_delta):
 		_update_place_raycast(xr_camera_3d.global_position, xr_camera_3d.global_transform.basis)
 
 	_update_pickup_button()
+	_update_repair_button()
+	_update_repair_ar(delta)
+
+
+func _update_repair_ar(delta: float) -> void:
+	# Stesso principio del tasto E tenuto premuto su PC, ma guidato dal
+	# RepairButton (button_down/button_up) invece che da Input.is_key_pressed.
+	if barra_riparazione:
+		barra_riparazione.visible = (focused_speaker != null)
+
+	if is_repairing_ar and focused_speaker != null:
+		var tempo_necessario = focused_speaker.tempo_riparazione()
+		repair_timer += delta
+		if barra_riparazione:
+			barra_riparazione.value = repair_timer / tempo_necessario
+		if repair_timer >= tempo_necessario:
+			focused_speaker.repair()
+			repair_timer = 0.0
+			if barra_riparazione:
+				barra_riparazione.value = 0.0
+	else:
+		repair_timer = 0.0
+		if barra_riparazione:
+			barra_riparazione.value = 0.0
 
 
 func _update_interaction_raycast(origin: Vector3, basis: Basis) -> void:
@@ -325,6 +359,26 @@ func _on_pickup_button_pressed() -> void:
 			held_objct.place(Vector3(place_position.x, place_position.y, place_position.z))
 			place_position = Vector3.ZERO
 			held_objct = null
+
+
+func _update_repair_button() -> void:
+	if not repair_button:
+		return
+	# focused_speaker in _update_interaction_raycast() è già garantito rotto
+	# (BROKEN) quando non è null, quindi qui basta controllare che esista.
+	repair_button.visible = (focused_speaker != null)
+	repair_button.disabled = (focused_speaker == null)
+
+
+func _on_repair_button_down() -> void:
+	is_repairing_ar = true
+
+
+func _on_repair_button_up() -> void:
+	is_repairing_ar = false
+	repair_timer = 0.0
+	if barra_riparazione:
+		barra_riparazione.value = 0.0
 
 
 func _on_fatica_changed(f) -> void:
