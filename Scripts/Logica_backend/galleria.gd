@@ -1,6 +1,9 @@
 extends Node3D
 
-@onready var timer_lab: Label = $Player/CharacterBody3D/HUD/Timer
+# Il timer non è più mostrato nell'HUD 2D: è un pannello 3D montato a muro
+# (vedi Scene/timer_muro.tscn), il giocatore deve girarsi verso il muro per
+# controllarlo, esattamente come un vero orologio da museo.
+@onready var timer_muro = $TimerMuro
 @onready var timer: Timer = $Timer
 
 
@@ -10,14 +13,16 @@ func _ready() -> void:
 	#questo è chiamato per ultimo dopo aver chiamato tutti i nodi figli
 	GameManager.calcola_quote()
 	timer.start()
-	
+
 	GameManager.game_over.connect(_on_game_over)
 	GameManager.vittoria_raggiunta.connect(_on_vittoria_raggiunta)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	timer_lab.text = "%02d:%02d" % time_left_museum()
-	
+	var tempo = time_left_museum()
+	if timer_muro:
+		timer_muro.set_tempo(tempo[0], tempo[1])
+
 func time_left_museum(): 
 	var time_left = timer.time_left
 	var minute = floor(time_left/60)
