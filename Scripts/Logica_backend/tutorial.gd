@@ -16,10 +16,18 @@ extends Node3D
 # oggetti, gestione forzata del blackout) è invariato.
 
 # --- RIFERIMENTI AI NODI DELLA SCENA ---
-@export var testo_tutorial: Label
-@export var oggetto_statua: RigidBody3D
-@export var speaker_tutorial: StaticBody3D
-@export var faretto_tutorial: StaticBody3D
+# @onready + $percorso invece di @export: un @export tipizzato su un nodo
+# (es. "RigidBody3D") in Godot richiede comunque un NodePath assegnato "sul
+# serio" dall'Inspector per essere risolto in un riferimento vero; scrivendolo
+# a mano nel file .tscn (come avevo fatto) la proprietà restava Nil a runtime,
+# causando il crash "Invalid access to property or key 'obj_state' on a base
+# object of type 'Nil'". @onready con $ è lo stesso pattern già usato ovunque
+# nel resto del progetto (galleria.gd, player.gd, timer_muro.gd) e si risolve
+# sempre correttamente perché legge la scena reale al momento di _ready().
+@onready var testo_tutorial: Label = $TutorialHUD/Panel/TestoTutorial
+@onready var oggetto_statua: RigidBody3D = $OggettoStatua
+@onready var speaker_tutorial: StaticBody3D = $SpeakerTutorial
+@onready var faretto_tutorial: StaticBody3D = $FarettoTutorial
 
 # --- STATI DEL TUTORIAL ---
 enum Step {
