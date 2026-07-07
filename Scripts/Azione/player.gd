@@ -187,9 +187,12 @@ func _physics_process_pc(delta):
 	if Input.is_action_pressed("move_right"):   input_dir.x += 1
 	if Input.is_key_pressed(KEY_E):
 		if focused_speaker != null:
+			# Il tempo di riparazione dipende dalla taglia dello speaker
+			# (3s/5s/7s per piccolo/medio/grande), non più fisso a 3 secondi.
+			var tempo_necessario = focused_speaker.tempo_riparazione()
 			repair_timer += delta
-			barra_riparazione.value = repair_timer / 3.0
-			if repair_timer >= 3.0:
+			barra_riparazione.value = repair_timer / tempo_necessario
+			if repair_timer >= tempo_necessario:
 				focused_speaker.repair()
 				repair_timer = 0.0
 				barra_riparazione.value = 0.0

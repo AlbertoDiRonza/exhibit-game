@@ -3,6 +3,11 @@ extends RigidBody3D
 @export var is_artwork: bool = true
 @export var model: PackedScene
 
+# Fattore di scala visivo/fisico dell'intero oggetto (mesh + collisioni +
+# area di prossimità, che sono tutti figli di questo nodo e quindi ereditano
+# la sua scala). 2.0 = il doppio della taglia originale del modello.
+@export var fattore_scala: float = 2.0
+
 var mesh_instance: MeshInstance3D = null
 var box : BoxShape3D = BoxShape3D.new()
 
@@ -21,7 +26,13 @@ var half_height: float = 0.0
 var luce_applicata: bool = false
 
 func _ready() -> void:
-	if model: 
+	# Scala l'intero nodo (mesh importata, CollisionShape3D e "Area occupata"
+	# sono tutti figli di questo RigidBody3D, quindi seguono la stessa scala):
+	# le dimensioni di collisione calcolate sotto restano sempre coerenti con
+	# quello che si vede, qualunque sia fattore_scala.
+	scale = Vector3.ONE * fattore_scala
+
+	if model:
 		var istanza = model.instantiate()
 		add_child(istanza)
 		

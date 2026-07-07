@@ -40,15 +40,19 @@ one_shot = true
 
 [node name="Altoparlante 1" parent="Speakers" unique_id=1928711882 instance=ExtResource("7_1d8q1")]
 transform = Transform3D(-4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, 0, 1, -9, 4, 0)
+taglia = 0
 
 [node name="Altoparlante 2" parent="Speakers" unique_id=1229703400 instance=ExtResource("7_1d8q1")]
 transform = Transform3D(1, 0, 0, 0, -0.34202012, 0.9396926, 0, -0.9396926, -0.34202012, 0, 4, 9)
+taglia = 1
 
 [node name="Altoparlante 3" parent="Speakers" unique_id=1698661019 instance=ExtResource("7_1d8q1")]
 transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 9, 4, 0)
+taglia = 2
 
 [node name="Altoparlante 4" parent="Speakers" unique_id=1096641512 instance=ExtResource("7_1d8q1")]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 4, -9)
+taglia = 1
 
 [node name="FarettoFisso" parent="." unique_id=1286617681 instance=ExtResource("8_k2rys")]
 transform = Transform3D(-0.81962496, 0, 0.5729003, 0, 1, 0, -0.5729003, 0, -0.81962496, 4.291892, 7.574, -2.0933056)
