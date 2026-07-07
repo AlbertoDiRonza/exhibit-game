@@ -33,7 +33,7 @@ func _on_timer_timeout() -> void:
 	GameManager.game_over.emit()
 
 func _on_game_over() -> void:
-	get_tree().change_scene_to_file("res://Scene/game_over.tscn")
+	SceneTransition.cambia_scena("res://Scene/game_over.tscn")
 
 func _on_vittoria_raggiunta() -> void:
-	get_tree().change_scene_to_file("res://Scene/vittoria.tscn")
+	SceneTransition.cambia_scena("res://Scene/vittoria.tscn")

@@ -1,0 +1,83 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Logica_backend/tutorial.gd" id="1_tutorial"]
+[ext_resource type="PackedScene" path="res://Scene/pavimento.tscn" id="2_pavimento"]
+[ext_resource type="PackedScene" uid="uid://2yvw3svgyr4d" path="res://Scene/player.tscn" id="3_player"]
+[ext_resource type="PackedScene" uid="uid://bdt3wcu1yu11e" path="res://Scene/oggetto.tscn" id="4_oggetto"]
+[ext_resource type="PackedScene" uid="uid://d18n11nvafd7h" path="res://Assets/3D_models/statue_ancient_woman/Venus of Milo.glb" id="5_venere"]
+[ext_resource type="PackedScene" uid="uid://beqlgo34io4dj" path="res://Scene/altoparlante.tscn" id="6_speaker"]
+[ext_resource type="PackedScene" uid="uid://mi1cbbkphe8h" path="res://Scene/faretto_fisso.tscn" id="7_faretto"]
+
+[sub_resource type="Environment" id="Environment_tutorial"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tutorial"]
+bg_color = Color(0.07, 0.045, 0.03, 0.85)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.75, 0.6, 0.35, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="Tutorial" type="Node3D"]
+script = ExtResource("1_tutorial")
+testo_tutorial = NodePath("TutorialHUD/Panel/TestoTutorial")
+oggetto_statua = NodePath("OggettoStatua")
+speaker_tutorial = NodePath("SpeakerTutorial")
+faretto_tutorial = NodePath("FarettoTutorial")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_tutorial")
+
+[node name="Pavimento" parent="." instance=ExtResource("2_pavimento")]
+
+[node name="Player" parent="." instance=ExtResource("3_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 3)
+
+[node name="OggettoStatua" parent="." instance=ExtResource("4_oggetto")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0.5, 1.5)
+model = ExtResource("5_venere")
+
+[node name="SpeakerTutorial" parent="." instance=ExtResource("6_speaker")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 2, 0)
+
+[node name="FarettoTutorial" parent="." instance=ExtResource("7_faretto")]
+transform = Transform3D(0.81962496, 0, -0.5729003, 0, 1, 0, 0.5729003, 0, 0.81962496, -4.291892, 7.574, 2.0933056)
+
+[node name="TutorialHUD" type="CanvasLayer" parent="."]
+
+[node name="Panel" type="Panel" parent="TutorialHUD"]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 40.0
+offset_top = -170.0
+offset_right = -40.0
+offset_bottom = -40.0
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_tutorial")
+
+[node name="TestoTutorial" type="Label" parent="TutorialHUD/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 12.0
+offset_right = -20.0
+offset_bottom = -12.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.98, 0.85, 0.55, 1)
+theme_override_colors/font_outline_color = Color(0.22, 0.11, 0.04, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 26
+text = "Guardati intorno.
+Guarda la statua e premi 'E' per prenderla."
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3

@@ -22,6 +22,7 @@ config/icon="res://Assets/Immagini/icon.svg"
 [autoload]
 
 GameManager="*res://Scripts/Logica_backend/game_manager.gd"
+SceneTransition="*res://Scripts/Logica_backend/scene_transition.gd"
 ARCoreInterfaceInstance="*uid://2876yve8sthc"
 
 [display]

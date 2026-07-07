@@ -10,7 +10,7 @@ func _ready() -> void:
 
 func _on_retry_pressed() -> void:
 	GameManager.reset_stato()
-	get_tree().change_scene_to_file("res://Scene/main_scene.tscn")
+	SceneTransition.cambia_scena("res://Scene/main_scene.tscn")
 
 func _on_quit_pressed() -> void:
 	get_tree().quit()
