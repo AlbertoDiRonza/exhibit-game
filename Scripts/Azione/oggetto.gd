@@ -71,10 +71,17 @@ func _ready() -> void:
 	area_occupata.area_entered.connect(_on_area_occupata_area_entered)
 	area_occupata.area_exited.connect(_on_area_occupata_area_exited)
 
-func _physics_process(delta: float) -> void: 
-	if obj_state == State.HAND and player: 
-		var target_position = player.camera_3d.global_position + (player.camera_3d.global_transform.basis * Vector3(0, -0.3, -1.5))
-		global_position = global_position.lerp(target_position, delta * 10) 
+func _physics_process(delta: float) -> void:
+	if obj_state == State.HAND and player:
+		# In AR la camera che si muove/ruota davvero con il telefono è
+		# xr_camera_3d (player.camera_3d resta ferma: in _ready() viene
+		# disattivata con camera_3d.current = false e non è mai aggiornata
+		# dal runtime XR). Usare sempre camera_3d, come prima, faceva sì che
+		# l'oggetto in mano seguisse solo gli spostamenti del joystick e non
+		# la rotazione reale del telefono, restando "indietro" a schermo.
+		var cam = player.xr_camera_3d if player.is_xr_active else player.camera_3d
+		var target_position = cam.global_position + (cam.global_transform.basis * Vector3(0, -0.3, -1.5))
+		global_position = global_position.lerp(target_position, delta * 10)
 
 func pick_up(p) -> void:
 	if obj_state == State.PLACED:

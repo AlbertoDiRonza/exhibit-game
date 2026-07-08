@@ -1,23 +1,13 @@
 extends Node
 
-# Musica di sottofondo del gioco. Autoload, quindi il suo _ready() gira
-# all'avvio del gioco, prima ancora che la scena Menu entri nell'albero:
-# per questo la musica parte già da sola quando il menu compare, senza
-# bisogno che menu_principale.gd faccia nulla.
+# Musica di sottofondo. Autoload: parte da sola all'avvio, prima ancora che
+# il Menu entri in scena.
 #
-# Comportamento:
-# - Riparte da 0:00 ogni volta che si cambia scena: SceneTransition.cambia_scena()
-#   chiama riavvia() a ogni transizione (menu -> tutorial, tutorial -> livello1,
-#   livello1 -> vittoria/game over, riprova -> livello1).
-# - Si interrompe (pausa, non stop) mentre uno speaker è rotto, e riprende
-#   esattamente da dove si era fermata quando viene riparato: usiamo
-#   stream_paused, che congela la posizione di riproduzione invece di
-#   azzerarla.
-# - Il file caricato è una versione tagliata a 5 minuti della traccia
-#   originale da 11 minuti (gamemusic.ogg, ~5MB), non il file originale da
-#   215MB (gamemusic.flac): quest'ultimo resta negli asset ma non viene mai
-#   caricato in gioco. Essendo la traccia usata più corta di una partita
-#   completa, si rimette in loop da sola tramite il segnale "finished".
+# - Riparte da 0:00 a ogni cambio scena (SceneTransition chiama riavvia()).
+# - Va in pausa (non stop) mentre uno speaker è rotto, e riprende da dove si
+#   era fermata: usiamo stream_paused invece di azzerare la posizione.
+# - Usa la versione tagliata a 5 minuti (gamemusic.ogg), non l'originale da
+#   11 minuti (gamemusic.flac, tenuto negli asset ma mai caricato in gioco).
 
 @onready var player: AudioStreamPlayer = AudioStreamPlayer.new()
 
@@ -38,8 +28,8 @@ func riavvia() -> void:
 	player.play(0.0)
 
 func _on_finished() -> void:
-	# "finished" non scatta mentre stream_paused è true, quindi se arriva qui
-	# vuol dire che la traccia è arrivata davvero in fondo: la rimandiamo da capo.
+	# "finished" non scatta durante la pausa: se arriva qui la traccia è
+	# finita davvero, la rimandiamo da capo.
 	player.play(0.0)
 
 func _process(_delta: float) -> void:

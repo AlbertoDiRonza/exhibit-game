@@ -1,17 +1,13 @@
 extends CanvasLayer
 
-# Autoload globale: un rettangolo nero a schermo intero usato per dissolvere
-# in nero e poi riportare alla luce a ogni cambio scena, al posto del taglio
-# secco di get_tree().change_scene_to_file(). Essendo un autoload (dichiarato
-# in project.godot), questo nodo non fa parte dell'albero della scena che
-# viene sostituita: sopravvive intatto al cambio, quindi il nero resta in
-# sovraimpressione anche nell'istante in cui la scena vecchia viene distrutta
-# e quella nuova istanziata.
+# Autoload globale: un rettangolo nero a schermo intero per dissolvere e
+# riportare alla luce a ogni cambio scena, invece del taglio secco di
+# get_tree().change_scene_to_file(). Essendo un autoload sopravvive al
+# cambio scena, quindi il nero resta visibile anche mentre la scena vecchia
+# viene distrutta e la nuova istanziata.
 #
-# Uso: al posto di
-#   get_tree().change_scene_to_file("res://Scene/x.tscn")
-# ovunque nel progetto si chiama
-#   SceneTransition.cambia_scena("res://Scene/x.tscn")
+# Uso: SceneTransition.cambia_scena("res://Scene/x.tscn") al posto di
+# get_tree().change_scene_to_file() diretto.
 
 @export var durata_dissolvenza: float = 0.5
 
@@ -39,9 +35,8 @@ func cambia_scena(percorso: String) -> void:
 	get_tree().change_scene_to_file(percorso)
 	MusicManager.riavvia()
 
-	# Aspettiamo un paio di frame per essere sicuri che la nuova scena sia
-	# già entrata nell'albero prima di iniziare la dissolvenza in apertura:
-	# altrimenti si vedrebbe per un istante la scena vecchia sotto al nero.
+	# Aspettiamo un paio di frame per essere sicuri che la nuova scena sia già
+	# in albero, altrimenti si vedrebbe per un istante quella vecchia.
 	await get_tree().process_frame
 	await get_tree().process_frame
 

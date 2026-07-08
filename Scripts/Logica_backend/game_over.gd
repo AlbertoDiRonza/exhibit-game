@@ -5,6 +5,10 @@ extends Control
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	# Vedi lo stesso commento in menu_principale.gd: schermata 2D pura, va
+	# spenta esplicitamente l'AR sul viewport altrimenti lo sfondo camera
+	# (rimasto acceso da Tutorial/Livello 1) copre l'interfaccia.
+	get_viewport().use_xr = false
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	retry_button.pressed.connect(_on_retry_pressed)
 	quit_button.pressed.connect(_on_quit_pressed)

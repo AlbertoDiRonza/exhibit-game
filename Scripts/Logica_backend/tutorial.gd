@@ -1,35 +1,20 @@
 extends Node3D
 
-# Tutorial: script originale del collega, adattato solo su due punti per farlo
-# combaciare con il resto del progetto:
-#   1. il percorso della scena finale ("LivelloPrincipale.tscn" era un
-#      placeholder) ora punta a res://Scene/main_scene.tscn, che è il
-#      "Livello 1" vero e proprio;
-#   2. prima di cambiare scena chiamiamo GameManager.reset_stato(): senza
-#      questo, l'unico oggetto/speaker del tutorial resterebbe registrato nel
-#      GameManager (che è un autoload, sopravvive al cambio scena) e si
-#      sommerebbe ai due oggetti/quattro speaker veri del Livello 1, sballando
-#      il calcolo della quota fatica. reset_stato() azzera tutto PRIMA che gli
-#      oggetti del Livello 1 si auto-registrino nel loro _ready(), esattamente
-#      come già succede quando si passa dal menu o si preme "Riprova".
-# Il resto della logica (macchina a stati, registrazione manuale degli
-# oggetti, gestione forzata del blackout) è invariato.
+# Tutorial: script del collega, adattato su due punti per combaciare col
+# resto del progetto: la scena finale ora punta a main_scene.tscn (Livello 1
+# vero), e prima del cambio scena chiamiamo GameManager.reset_stato() per non
+# sommare l'oggetto/speaker del tutorial a quelli veri del Livello 1.
 
-# --- RIFERIMENTI AI NODI DELLA SCENA ---
-# @onready + $percorso invece di @export: un @export tipizzato su un nodo
-# (es. "RigidBody3D") in Godot richiede comunque un NodePath assegnato "sul
-# serio" dall'Inspector per essere risolto in un riferimento vero; scrivendolo
-# a mano nel file .tscn (come avevo fatto) la proprietà restava Nil a runtime,
-# causando il crash "Invalid access to property or key 'obj_state' on a base
-# object of type 'Nil'". @onready con $ è lo stesso pattern già usato ovunque
-# nel resto del progetto (galleria.gd, player.gd, timer_muro.gd) e si risolve
-# sempre correttamente perché legge la scena reale al momento di _ready().
+# Riferimenti ai nodi della scena, con @onready + $percorso invece di
+# @export: un @export su un nodo va comunque assegnato "sul serio"
+# dall'Inspector, altrimenti resta Nil a runtime e causa un crash. @onready
+# funziona sempre perché legge la scena reale al momento di _ready().
 @onready var testo_tutorial: Label = $TutorialHUD/Panel/TestoTutorial
 @onready var oggetto_statua: RigidBody3D = $OggettoStatua
 @onready var speaker_tutorial: StaticBody3D = $SpeakerTutorial
 @onready var faretto_tutorial: StaticBody3D = $FarettoTutorial
 
-# --- STATI DEL TUTORIAL ---
+# Stati del tutorial
 enum Step {
 	PRENDI_OGGETTO,
 	PIAZZA_OGGETTO,
@@ -51,7 +36,7 @@ func _ready() -> void:
 	# 2. Registriamo gli oggetti con le funzioni ufficiali
 	if oggetto_statua:
 		GameManager.registra_oggetti(oggetto_statua)
-		# FONDAMENTALE: Diciamo al GameManager di calcolare il valore della statua!
+		# Serve per far calcolare al GameManager il valore della statua.
 		GameManager.calcola_quote()
 
 	if speaker_tutorial:
@@ -92,11 +77,11 @@ func _process(delta: float) -> void:
 				aggiorna_testo()
 
 		Step.RIPARA_SPEAKER:
-			# IL FIX: Controlliamo solo lo stato dello speaker.
-			# Rimosso il controllo "and GameManager.brkn_speaker == null" che bloccava il flusso.
+			# Basta controllare lo stato dello speaker (il controllo su
+			# brkn_speaker bloccava il flusso).
 			if speaker_tutorial.spk_state == speaker_tutorial.State.FUNCTIONING:
 
-				# Facciamo noi pulizia per sicurezza!
+				# Pulizia extra per sicurezza.
 				GameManager.brkn_speaker = null
 
 				stato_corrente = Step.PORTA_SOTTO_LUCE
@@ -111,12 +96,11 @@ func _process(delta: float) -> void:
 		Step.FINE:
 			timer_attesa += delta
 			if timer_attesa >= 3.0:
-				# Riacendiamo il GameManager per la prossima scena prima di cambiare!
+				# Riattiviamo il GameManager prima di cambiare scena.
 				GameManager.set_process(true)
 
-				# Puliamo lo stato del tutorial (un oggetto, uno speaker) prima
-				# che il Livello 1 registri i suoi (due oggetti, quattro
-				# speaker), altrimenti si sommerebbero.
+				# Puliamo lo stato del tutorial prima che il Livello 1 registri
+				# il suo, altrimenti si sommerebbero.
 				GameManager.reset_stato()
 
 				SceneTransition.cambia_scena("res://Scene/main_scene.tscn")

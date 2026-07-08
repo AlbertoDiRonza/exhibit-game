@@ -35,26 +35,15 @@ func _ready():
 	var interface = null
 	var interface_name = ""
 
-	# CAUSA REALE DEL NERO (confermata dal log nativo, tag ARCoreExtension):
-	# il plugin ARCore crea correttamente un CameraFeed chiamato "ARCore" con
-	# id 1 DENTRO interface.initialize() ("Godot ARCore: Feed 1 added").
-	# Ma subito dopo, la nostra CameraServer.set_monitoring_feeds(true)
-	# (chiamata DOPO initialize) fa scattare la scansione delle fotocamere
-	# generiche di Android, che ripulisce/sostituisce l'elenco feed e
-	# CANCELLA quello di ARCore — infatti un secondo più tardi
-	# CameraServer.feeds() mostrava solo feed generici "0 | BACK" ecc. che
-	# riusano lo stesso id 1, mai più "ARCore". Risultato: l'Environment
-	# punta a un feed generico inattivo invece che a quello reale di ARCore
-	# → schermo nero. Fix: attivare il monitoraggio PRIMA di initialize(),
-	# così la scansione generica avviene per prima e il feed di ARCore,
-	# creato dopo, ottiene un id libero senza essere cancellato.
+	# Bug dello schermo nero (confermato da log nativo): se attiviamo il
+	# monitoraggio feed DOPO initialize(), la scansione delle camere
+	# generiche di Android cancella il feed "ARCore" appena creato, e
+	# l'Environment finisce per puntare a un feed inattivo. Fix: attivare
+	# il monitoraggio prima, così il feed ARCore resta intatto.
 	CameraServer.set_monitoring_feeds(true)
 
-	# IMPORTANTE: il plugin ARCore richiede di inizializzare esplicitamente
-	# l'ambiente nativo (JNIEnv/JavaVM/Activity) tramite il singleton Android
-	# PRIMA di poter usare l'interfaccia XR "ARCore" — altrimenti va in crash
-	# (il puntatore JNIEnv resta nullo). Vedi plugin/demo/main3D.gd nel repo
-	# del plugin per il pattern d'uso ufficiale.
+	# Il plugin ARCore va inizializzato via singleton Android prima di
+	# usare l'interfaccia XR, altrimenti crasha (JNIEnv nullo).
 	if Engine.has_singleton("ARCorePlugin"):
 		var arcore_plugin = Engine.get_singleton("ARCorePlugin")
 		arcore_plugin.initializeEnvironment()
@@ -74,22 +63,17 @@ func _ready():
 			camera_3d.current = false
 			if crosshair:
 				crosshair.visible = false
-			# label_interazione e label_interazione_spk sono pensate per il
-			# testo fisso dell'interazione da PC (tasto E): in AR il loro
-			# ruolo è preso dal testo dei bottoni touch, quindi restano
-			# nascoste una volta per tutte. barra_riparazione invece la
-			# riusiamo anche in AR (vedi _physics_process_ar), quindi non la
-			# nascondiamo qui: la sua visibilità è gestita dinamicamente.
+			# Le label di interazione da PC (tasto E) restano nascoste in AR:
+			# il loro ruolo lo fanno i bottoni touch. barra_riparazione invece
+			# si riusa anche in AR, quindi la sua visibilità resta dinamica.
 			if label_interazione:
 				label_interazione.visible = false
 			if label_interazione_spk:
 				label_interazione_spk.visible = false
-			# HUD touch dedicato all'AR: joystick virtuale per lo spostamento
-			# (in AR "transform.basis" del CharacterBody3D non ruota da solo
-			# camminando fisicamente, serve un input esplicito), pulsante per
-			# raccogliere/posizionare gli oggetti al posto del tasto E, e
-			# pulsante per riparare lo speaker (tenuto premuto, al posto del
-			# tasto E tenuto premuto su PC), che su schermo touch non esiste.
+			# HUD touch per l'AR: joystick per muoversi (il CharacterBody3D non
+			# ruota da solo camminando fisicamente), bottone per raccogliere/
+			# posizionare al posto del tasto E, bottone per riparare lo
+			# speaker (tenuto premuto).
 			if virtual_joystick:
 				virtual_joystick.visible = true
 			if pickup_button:
@@ -100,29 +84,19 @@ func _ready():
 				repair_button.button_down.connect(_on_repair_button_down)
 				repair_button.button_up.connect(_on_repair_button_up)
 			if interface_name == "ARCore":
-				# Abilita il rilevamento dei piani orizzontali/verticali e
-				# il posizionamento istantaneo, utili per l'interazione AR reale.
-				if interface.has_method("enable_horizontal_plane_detection"):
-					interface.enable_horizontal_plane_detection(true)
-				if interface.has_method("enable_vertical_plane_detection"):
-					interface.enable_vertical_plane_detection(true)
+				# Rilevamento piani disattivato: causava un crash nativo
+				# confermato da log (SIGSEGV nel plane renderer) al cambio
+				# scena tutorial -> Livello 1. Il gioco non usa piani reali
+				# per nessuna meccanica, quindi non manca nulla al gameplay.
+				# interface.enable_horizontal_plane_detection(true)
+				# interface.enable_vertical_plane_detection(true)
 				if interface.has_method("enable_instant_placement"):
 					interface.enable_instant_placement(true)
-				# Il feed "ARCore" esiste ed è attivo (verificato nei log). La
-				# causa reale del nero era un limite del renderer GLES3/
-				# Compatibility di Godot 4.7 stable: il codice che disegna le
-				# CameraFeed esterne (FeedEffects) esiste nel motore ma non
-				# viene mai chiamato in questa versione (verificato sui
-				# sorgenti del tag 4.7-stable). Anche il quad 3D con
-				# CameraTexture+StandardMaterial3D non può funzionare, perché
-				# la texture della camera è di tipo GL_TEXTURE_EXTERNAL_OES e
-				# richiede uno shader con samplerExternalOES, non ottenibile
-				# da un materiale standard. Soluzione adottata: patch nativa
-				# nel plugin C++ (ARCoreInterface::_pre_draw_viewport) che
-				# disegna lo sfondo camera direttamente in OpenGL ES prima del
-				# render della scena 3D. Qui in GDScript non serve più fare
-				# nulla per lo sfondo: Environment.background_mode è impostato
-				# su BG_KEEP (4) per non farlo cancellare dal motore.
+				# Il feed camera è attivo, ma il renderer GLES3 di Godot 4.7 non
+				# disegna mai le CameraFeed esterne: risolto con una patch
+				# nativa nel plugin C++ che disegna lo sfondo direttamente in
+				# OpenGL ES. Qui non serve più fare nulla, Environment.
+				# background_mode resta su BG_KEEP.
 				if interface.has_method("get_camera_feed_id"):
 					var feed_id = interface.get_camera_feed_id()
 					print("ARCore feed id: ", feed_id)
@@ -158,11 +132,9 @@ func _input(event):
 				Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 				
 		if event is InputEventKey and event.pressed:
-			# Con uno speaker che sta facendo rumore non si può RACCOGLIERE un
-			# nuovo oggetto. Posizionare quello che hai già in mano resta
-			# sempre permesso, altrimenti se il rumore parte mentre tieni
-			# qualcosa in mano resti bloccato (non puoi nemmeno riparare lo
-			# speaker, dato che serve avere le mani libere).
+			# Con uno speaker rumoroso non si può raccogliere un nuovo oggetto,
+			# ma posizionare quello già in mano resta sempre permesso
+			# (altrimenti si resta bloccati con le mani occupate).
 			if focused_objct:
 				if event.keycode == KEY_E and GameManager.brkn_speaker == null:
 					focused_objct.pick_up(self)
@@ -170,9 +142,8 @@ func _input(event):
 					focused_objct = null
 			elif held_objct:
 				if event.keycode == KEY_E:
-					# result_place.position è la posione della collisione del ray cast con il pavimento
-					# il centro dell'oggetto (da cui determino la posizione relativa) è più in alto
-					# se sottraessi metterei il metà oggetto sotto il pavimento
+					# result_place.position è il punto di impatto del raycast col
+					# pavimento.
 					if is_floor:
 						#held_objct.place(Vector3(place_position.x, place_position.y + held_objct.half_height, place_position.z))
 						held_objct.place(Vector3(place_position.x, place_position.y, place_position.z))
@@ -197,8 +168,7 @@ func _physics_process_pc(delta):
 	if Input.is_action_pressed("move_right"):   input_dir.x += 1
 	if Input.is_key_pressed(KEY_E):
 		if focused_speaker != null:
-			# Il tempo di riparazione dipende dalla taglia dello speaker
-			# (3s/5s/7s per piccolo/medio/grande), non più fisso a 3 secondi.
+			# Il tempo di riparazione dipende dalla taglia dello speaker (3s/5s/7s).
 			var tempo_necessario = focused_speaker.tempo_riparazione()
 			repair_timer += delta
 			barra_riparazione.value = repair_timer / tempo_necessario
@@ -229,10 +199,8 @@ func _physics_process_pc(delta):
 
 
 func _physics_process_ar(delta):
-	# Movimento da joystick virtuale: la direzione è relativa a dove sta
-	# guardando la XRCamera3D (proiettata sul piano orizzontale), perché il
-	# CharacterBody3D in AR non ruota mai da solo camminando fisicamente —
-	# è la testa (la camera) a ruotare, tracciata da ARCore.
+	# Direzione relativa a dove guarda la XRCamera3D (proiettata sul piano
+	# orizzontale): in AR è la testa a ruotare, non il CharacterBody3D.
 	var joy: Vector2 = virtual_joystick.output if virtual_joystick else Vector2.ZERO
 	if joy.length() > 0.0:
 		var cam_basis := xr_camera_3d.global_transform.basis
@@ -262,8 +230,8 @@ func _physics_process_ar(delta):
 
 
 func _update_repair_ar(delta: float) -> void:
-	# Stesso principio del tasto E tenuto premuto su PC, ma guidato dal
-	# RepairButton (button_down/button_up) invece che da Input.is_key_pressed.
+	# Stesso principio del tasto E su PC, guidato dal RepairButton invece
+	# che da Input.is_key_pressed.
 	if barra_riparazione:
 		barra_riparazione.visible = (focused_speaker != null)
 
@@ -317,7 +285,7 @@ func _update_place_raycast(origin: Vector3, basis: Basis) -> void:
 	var result_place = space_state.intersect_ray(query_place)
 
 	if result_place:
-		# controllo su prodotto scalare per vedere se la normale del piano di incidenza sulla direzione y
+		# normal.y vicino a 1 = superficie orizzontale (pavimento).
 		if result_place.normal.y >= 0.99:
 			is_floor = true
 			place_position = result_place.position
@@ -331,16 +299,13 @@ func _update_pickup_button() -> void:
 	if not pickup_button:
 		return
 	if held_objct:
-		# Posizionare quello che hai già in mano resta sempre permesso, anche
-		# con uno speaker rumoroso: altrimenti resteresti bloccato con
-		# l'oggetto in mano finché non lo ripari (e per riparare servono le
-		# mani libere).
+		# Posizionare resta sempre permesso, anche con uno speaker rumoroso
+		# (altrimenti si resta bloccati con le mani occupate).
 		pickup_button.text = "Posiziona"
 		pickup_button.disabled = not is_floor
 	elif focused_objct:
 		pickup_button.text = "Raccogli"
-		# Con uno speaker che sta facendo rumore non si può raccogliere un
-		# nuovo oggetto.
+		# Non si può raccogliere un nuovo oggetto con uno speaker rumoroso.
 		pickup_button.disabled = (GameManager.brkn_speaker != null)
 	else:
 		pickup_button.text = "Raccogli"

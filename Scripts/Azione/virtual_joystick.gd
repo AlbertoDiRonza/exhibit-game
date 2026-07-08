@@ -1,20 +1,15 @@
 extends Control
 class_name ArTouchJoystick
-## Joystick virtuale touch per il movimento in modalità AR (dove non c'è
-## tastiera). Si tocca ovunque dentro l'area del controllo e si trascina:
-## la distanza/direzione dal centro del tocco iniziale determina "output",
-## un Vector2 normalizzato (-1..1 per asse) che player.gd legge in
-## _physics_process() per muovere il personaggio.
-##
-## Disegnato a mano con _draw() (due cerchi), niente texture esterne
-## necessarie.
+## Joystick touch per muoversi in AR (dove non c'è tastiera). Si tocca e si
+## trascina: la distanza dal centro diventa "output", un Vector2 -1..1 che
+## player.gd legge per muovere il personaggio. Disegnato a mano con _draw(),
+## niente texture esterne.
 
 @export var knob_radius: float = 40.0
 @export var base_radius: float = 90.0
 @export var dead_zone: float = 0.15
 
-## Direzione corrente del joystick, letta da player.gd. x = sinistra/destra,
-## y = avanti(-1)/indietro(+1), entrambi in range -1..1.
+## Direzione corrente, letta da player.gd (-1..1 per asse; y: avanti = -1).
 var output: Vector2 = Vector2.ZERO
 
 var _touch_index: int = -1
@@ -27,10 +22,8 @@ func _ready() -> void:
 
 
 func _draw() -> void:
-	# Il cerchio base resta fisso al centro del controllo; il tocco iniziale
-	# non deve necessariamente cadere esattamente al centro (più comodo da
-	# usare col pollice), ma il disegno resta sempre nello stesso punto per
-	# essere facilmente individuabile a schermo.
+	# Il cerchio base resta fisso al centro, anche se il tocco iniziale non
+	# ci cade esattamente sopra (più comodo da usare col pollice).
 	var center := size / 2.0
 	draw_circle(center, base_radius, Color(1, 1, 1, 0.18))
 	draw_arc(center, base_radius, 0, TAU, 48, Color(1, 1, 1, 0.55), 3.0, true)

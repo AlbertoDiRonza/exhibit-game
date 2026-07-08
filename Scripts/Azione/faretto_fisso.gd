@@ -3,22 +3,16 @@ extends StaticBody3D
 @onready var cono_luce = $ConoLuce
 @onready var spot_light: SpotLight3D = $SpotLight3D
 
-# Il faretto deve restare spento mentre uno speaker fa rumore (vedi _process).
+# Resta spento mentre uno speaker fa rumore (vedi _process).
 var is_on: bool = true
 
-# Id degli oggetti attualmente dentro IL MIO cono di luce, a prescindere dal
-# fatto che il faretto sia acceso o spento in questo momento. Serve per sapere
-# chi far ricomparire/sparire da GameManager.oggetti_illuminati quando il
-# faretto si riaccende o si spegne.
+# Oggetti dentro il mio cono in questo momento, acceso o spento che sia.
+# Serve per aggiornare GameManager.oggetti_illuminati quando mi accendo o spengo.
 var oggetti_nel_cono: Array = []
 
-# --- LAMPEGGIO DI AVVISO PRIMA DELLO SPEGNIMENTO ---
-# Quando uno speaker si rompe non vogliamo che la luce sparisca di scatto:
-# lampeggia per un breve periodo (avviso per il giocatore) e solo alla fine
-# del lampeggio si spegne davvero (is_on = false, con tutte le conseguenze
-# per illumina_adesso() e GameManager.oggetti_illuminati). Se lo speaker
-# viene riparato mentre si sta ancora lampeggiando, annulliamo e restiamo
-# accesi senza mai essere arrivati a spegnerci per davvero.
+# Quando uno speaker si rompe la luce non sparisce di scatto: lampeggia un
+# attimo come avviso e si spegne solo alla fine. Se lo speaker viene riparato
+# durante il lampeggio, annulliamo e restiamo accesi.
 const DURATA_LAMPEGGIO: float = 0.8
 const INTERVALLO_LAMPEGGIO: float = 0.08
 var sta_lampeggiando: bool = false
@@ -29,11 +23,9 @@ func _ready() -> void:
 	cono_luce.body_entered.connect(_on_cono_luce_body_entered)
 	cono_luce.body_exited.connect(_on_cono_luce_body_exited)
 
-# Controllo diretto (non basato su segnali/array che potrebbero non essere
-# ancora aggiornati): l'oggetto passato è ORA, in questo istante, dentro il
-# mio cono di luce E il faretto è acceso? Durante il lampeggio di avviso la
-# luce conta ancora come accesa (is_on resta true finché il lampeggio non
-# finisce): è solo un avviso, non ha ancora smesso di illuminare davvero.
+# Controllo diretto invece che affidarsi a segnali/array (potrebbero non
+# essere ancora aggiornati): l'oggetto è ora dentro il cono ed è acceso?
+# Durante il lampeggio conta ancora come acceso, è solo un avviso.
 func illumina_adesso(body: Node3D) -> bool:
 	return is_on and cono_luce.get_overlapping_bodies().has(body)
 
@@ -58,16 +50,14 @@ func _process(delta: float) -> void:
 			is_on = false
 			if spot_light:
 				spot_light.visible = false
-			# Il faretto si spegne per davvero: nessuno conta più come
-			# illuminato da qui.
+			# Ora è spento per davvero: nessuno qui conta più come illuminato.
 			for id in oggetti_nel_cono:
 				GameManager.rimuovi_luce_oggetto(id)
 		return
 
 	if not deve_essere_acceso and is_on:
-		# Lo speaker si è appena rotto: invece di spegnere di scatto, avvisiamo
-		# lampeggiando. La luce resta funzionalmente accesa (is_on = true)
-		# finché il lampeggio non è concluso.
+		# Lo speaker si è appena rotto: avvisiamo lampeggiando invece di
+		# spegnere di scatto.
 		sta_lampeggiando = true
 		timer_lampeggio = 0.0
 		return
@@ -77,23 +67,20 @@ func _process(delta: float) -> void:
 		if spot_light:
 			spot_light.visible = is_on
 		if is_on:
-			# Il faretto si riaccende: chi è rimasto dentro il cono torna a
-			# contare come illuminato.
+			# Si riaccende: chi è rimasto nel cono torna a contare come illuminato.
 			for id in oggetti_nel_cono:
 				GameManager.aggiungi_luce_oggetto(id)
 
 func _on_cono_luce_body_entered(body: Node3D) -> void:
-	# 1. LETTURA SICURA: Chiediamo le variabili senza far arrabbiare Godot
+	# get() invece di accesso diretto, per non crashare se il body non ha
+	# queste proprietà (es. pavimento o il faretto stesso).
 	var stato = body.get("obj_state")
 	var opera = body.get("is_artwork")
 
-	# 2. FILTRO DI SICUREZZA: Se è il pavimento o il faretto stesso, ignoralo.
 	if stato == null:
 		return
 
-	# 3. FILTRO LOGICA: A questo punto sappiamo che è un Oggetto (Statua o Tavolino).
-	# Se è il tavolino, 'opera' sarà false. L'if qui sotto fallisce e non ricevi il bonus luce!
-	# Solo la Scultura supererà questo controllo.
+	# Solo le opere d'arte danno il bonus luce (es. il tavolino no).
 	if opera == true:
 		if stato == body.State.PLACED:
 			var id = body.get_instance_id()
