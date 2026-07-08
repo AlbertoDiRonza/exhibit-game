@@ -1,14 +1,10 @@
 extends Node3D
 
-# Tutorial: script del collega, adattato su due punti per combaciare col
-# resto del progetto: la scena finale ora punta a main_scene.tscn (Livello 1
-# vero), e prima del cambio scena chiamiamo GameManager.reset_stato() per non
+# Prima del cambio scena chiamiamo GameManager.reset_stato() per non
 # sommare l'oggetto/speaker del tutorial a quelli veri del Livello 1.
 
-# Riferimenti ai nodi della scena, con @onready + $percorso invece di
-# @export: un @export su un nodo va comunque assegnato "sul serio"
-# dall'Inspector, altrimenti resta Nil a runtime e causa un crash. @onready
-# funziona sempre perché legge la scena reale al momento di _ready().
+# @onready + $percorso invece di @export: un @export su un nodo va
+# assegnato dall'Inspector, altrimenti resta Nil a runtime.
 @onready var testo_tutorial: Label = $TutorialHUD/Panel/TestoTutorial
 @onready var oggetto_statua: RigidBody3D = $OggettoStatua
 @onready var speaker_tutorial: StaticBody3D = $SpeakerTutorial
@@ -77,8 +73,6 @@ func _process(delta: float) -> void:
 				aggiorna_testo()
 
 		Step.RIPARA_SPEAKER:
-			# Basta controllare lo stato dello speaker (il controllo su
-			# brkn_speaker bloccava il flusso).
 			if speaker_tutorial.spk_state == speaker_tutorial.State.FUNCTIONING:
 
 				# Pulizia extra per sicurezza.

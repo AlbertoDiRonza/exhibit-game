@@ -35,11 +35,8 @@ func _ready():
 	var interface = null
 	var interface_name = ""
 
-	# Bug dello schermo nero (confermato da log nativo): se attiviamo il
-	# monitoraggio feed DOPO initialize(), la scansione delle camere
-	# generiche di Android cancella il feed "ARCore" appena creato, e
-	# l'Environment finisce per puntare a un feed inattivo. Fix: attivare
-	# il monitoraggio prima, così il feed ARCore resta intatto.
+	# Il monitoraggio va attivato PRIMA di initialize(): dopo, la scansione
+	# camere di Android cancella il feed "ARCore" appena creato.
 	CameraServer.set_monitoring_feeds(true)
 
 	# Il plugin ARCore va inizializzato via singleton Android prima di
@@ -84,19 +81,16 @@ func _ready():
 				repair_button.button_down.connect(_on_repair_button_down)
 				repair_button.button_up.connect(_on_repair_button_up)
 			if interface_name == "ARCore":
-				# Rilevamento piani disattivato: causava un crash nativo
-				# confermato da log (SIGSEGV nel plane renderer) al cambio
-				# scena tutorial -> Livello 1. Il gioco non usa piani reali
-				# per nessuna meccanica, quindi non manca nulla al gameplay.
+				# Rilevamento piani disattivato: riattivarlo causa un crash al
+				# cambio scena tutorial -> Livello 1. Non serve comunque a
+				# nessuna meccanica del gioco.
 				# interface.enable_horizontal_plane_detection(true)
 				# interface.enable_vertical_plane_detection(true)
 				if interface.has_method("enable_instant_placement"):
 					interface.enable_instant_placement(true)
-				# Il feed camera è attivo, ma il renderer GLES3 di Godot 4.7 non
-				# disegna mai le CameraFeed esterne: risolto con una patch
-				# nativa nel plugin C++ che disegna lo sfondo direttamente in
-				# OpenGL ES. Qui non serve più fare nulla, Environment.
-				# background_mode resta su BG_KEEP.
+				# Lo sfondo camera è disegnato da una patch nativa nel plugin C++
+				# (il renderer GLES3 non supporta le CameraFeed esterne). Qui non
+				# serve fare nulla, Environment.background_mode resta su BG_KEEP.
 				if interface.has_method("get_camera_feed_id"):
 					var feed_id = interface.get_camera_feed_id()
 					print("ARCore feed id: ", feed_id)
@@ -142,8 +136,6 @@ func _input(event):
 					focused_objct = null
 			elif held_objct:
 				if event.keycode == KEY_E:
-					# result_place.position è il punto di impatto del raycast col
-					# pavimento.
 					if is_floor:
 						#held_objct.place(Vector3(place_position.x, place_position.y + held_objct.half_height, place_position.z))
 						held_objct.place(Vector3(place_position.x, place_position.y, place_position.z))

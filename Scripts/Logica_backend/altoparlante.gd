@@ -11,7 +11,6 @@ enum Taglia { PICCOLO, MEDIO, GRANDE }
 enum State {FUNCTIONING, BROKEN}
 var spk_state : State = State.FUNCTIONING
 
-# Ogni speaker decide da solo il tempo di riparazione, in base alla taglia.
 func tempo_riparazione() -> float:
 	match taglia:
 		Taglia.PICCOLO:
@@ -40,8 +39,7 @@ func _ready() -> void:
 		var istanza = model.instantiate()
 		add_child(istanza)
 
-		# Scaliamo il modello importato, non lo StaticBody3D radice: scalare
-		# la radice non funzionava in modo affidabile.
+		# Scaliamo il modello importato, non lo StaticBody3D radice.
 		istanza.scale = Vector3.ONE * fattore
 
 		GameManager.registra_speakers(self)

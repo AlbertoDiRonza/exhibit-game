@@ -3,8 +3,7 @@ extends RigidBody3D
 @export var is_artwork: bool = true
 @export var model: PackedScene
 
-# Fattore di scala visivo/fisico dell'intero oggetto (mesh + collisione +
-# area di prossimità, scalate esplicitamente in _ready()). 2.0 = il doppio
+# Fattore di scala di mesh, collisione e area di prossimità. 2.0 = doppio
 # della taglia originale del modello.
 @export var fattore_scala: float = 2.0
 
@@ -19,10 +18,8 @@ var obj_state: State = State.STORAGE
 var player = null
 var half_height: float = 0.0
 
-# Vero se l'ULTIMO posizionamento di quest'oggetto era sotto un faretto
-# acceso e ha quindi scalato la quota fatica. Serve per sapere, quando lo
-# si riprende in mano, se restituire la quota oppure no (altrimenti si
-# potrebbe raccogliere fatica gratis piazzando fuori dalla luce).
+# Vero se l'ultimo piazzamento era sotto un faretto acceso: serve a sapere
+# se restituire la quota fatica quando l'oggetto viene ripreso in mano.
 var luce_applicata: bool = false
 
 func _ready() -> void:
@@ -30,12 +27,7 @@ func _ready() -> void:
 		var istanza = model.instantiate()
 		add_child(istanza)
 
-		# Scaliamo direttamente il modello importato (non il RigidBody3D
-		# radice): scalare il nodo radice non dava risultati affidabili,
-		# probabilmente perché il modello importato dal .glb ha un nodo con
-		# "top_level" attivo o comunque non eredita in modo prevedibile la
-		# scala del genitore. Scalando "istanza" (che è il nodo del modello
-		# stesso) l'effetto visivo è garantito.
+		# Scaliamo il modello importato (istanza), non il RigidBody3D radice.
 		istanza.scale = Vector3.ONE * fattore_scala
 
 		var aabb = AABB()
@@ -45,20 +37,14 @@ func _ready() -> void:
 				mesh_instance = child
 				aabb = mesh_instance.get_aabb()
 
-		# Le collisioni (CollisionShape3D e "Area occupata") sono create qui
-		# da zero ogni volta (BoxShape3D.new()), quindi non sono condivise
-		# con altri oggetti: moltiplichiamo direttamente per fattore_scala,
-		# così restano coerenti con il modello appena scalato.
+		# Collisioni create da zero per ogni oggetto: scaliamo direttamente
+		# per fattore_scala.
 		box.size = aabb.size * 0.8 * fattore_scala
 		$CollisionShape3D.shape = box
 		$CollisionShape3D.position = aabb.get_center() * fattore_scala
 
-		# Moltiplicatore: 2.5 originale -> 1.4 (per far stare più oggetti sotto
-		# lo stesso faretto) -> 1.8 (leggero riallargamento su richiesta, ora
-		# che c'è anche un terzo faretto a dare più spazio in giro). Resta
-		# comunque più larga della sagoma reale dell'oggetto, quindi il malus
-		# da vicinanza c'è ancora se li ammassi, solo con più margine prima
-		# di scattare rispetto a 1.4.
+		# Area di prossimità più larga della sagoma reale, per dare margine
+		# prima che scatti il malus di vicinanza.
 		area_box.size = aabb.size * 1.8 * fattore_scala
 		$"Area occupata/CollisionShape3D".shape = area_box
 		$"Area occupata/CollisionShape3D".position = aabb.get_center() * fattore_scala
@@ -73,12 +59,8 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	if obj_state == State.HAND and player:
-		# In AR la camera che si muove/ruota davvero con il telefono è
-		# xr_camera_3d (player.camera_3d resta ferma: in _ready() viene
-		# disattivata con camera_3d.current = false e non è mai aggiornata
-		# dal runtime XR). Usare sempre camera_3d, come prima, faceva sì che
-		# l'oggetto in mano seguisse solo gli spostamenti del joystick e non
-		# la rotazione reale del telefono, restando "indietro" a schermo.
+		# In AR la camera che si muove davvero è xr_camera_3d (camera_3d resta
+		# ferma, disattivata in _ready()).
 		var cam = player.xr_camera_3d if player.is_xr_active else player.camera_3d
 		var target_position = cam.global_position + (cam.global_transform.basis * Vector3(0, -0.3, -1.5))
 		global_position = global_position.lerp(target_position, delta * 10)
@@ -105,18 +87,14 @@ func place(p: Vector3) -> void:
 	collision_layer = 1
 	collision_mask = 1
 
-	# Assicura la sincronizzazione del motore fisico prima di controllare chi ha
-	# intorno E prima di controllare se siamo dentro il cono di un faretto
-	# acceso. Aspettiamo un paio di frame fisici invece di uno solo: essendo
-	# un teletrasporto (global_position diretto, non un movimento fisico), il
-	# motore potrebbe impiegare un frame in più ad aggiornare le collisioni.
+	# Il piazzamento è un teletrasporto, non un movimento fisico: aspettiamo
+	# due frame prima di controllare prossimità e luce, per dare tempo al
+	# motore fisico di aggiornare le collisioni.
 	await get_tree().physics_frame
 	await get_tree().physics_frame
 
-	# La quota fatica si scala una volta sola, e SOLO se l'opera è finita
-	# sotto un faretto acceso: questa è la meccanica corretta (in precedenza
-	# scattava sempre, a prescindere dalla luce, ed era per questo che
-	# muovere gli oggetti causava riduzioni non volute).
+	# La quota fatica si scala una volta sola, solo se l'opera è sotto un
+	# faretto acceso.
 	var sotto_luce = is_artwork and _sotto_faretto_acceso()
 	if sotto_luce:
 		luce_applicata = true
@@ -126,9 +104,7 @@ func place(p: Vector3) -> void:
 
 	ricontrolla_prossimita()
 
-# Chiede direttamente a ogni faretto in scena se in questo momento mi sta
-# illuminando (invece di fidarsi di un array aggiornato da un segnale che, a
-# volte, non aveva ancora fatto in tempo a scattare subito dopo place()).
+# Chiede direttamente a ogni faretto in scena se mi sta illuminando ora.
 func _sotto_faretto_acceso() -> bool:
 	for faretto in get_tree().get_nodes_in_group("faretti"):
 		if faretto.illumina_adesso(self):
@@ -143,7 +119,7 @@ func ricontrolla_prossimita() -> void:
 func _on_area_occupata_area_entered(area: Area3D) -> void:
 	var proximity_obj = area.get_parent()
 	
-	# L'area del faretto può interagire con l'oggetto, ma non avendo obj_state fa crashare godot
+	# Il faretto non ha obj_state: controlliamo prima di accedervi.
 	if proximity_obj and "obj_state" in proximity_obj:
 		if self.obj_state == State.PLACED and proximity_obj.obj_state == State.PLACED:
 			GameManager.registra_coppia(self, proximity_obj)
